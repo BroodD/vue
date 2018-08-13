@@ -6,12 +6,24 @@ var bag = new Vue({
 				img: "img/bag_product.png",
 				name: "Алюминиевая накладка 8-ми угольная Жгутик 433 зол. д.140",
 				price: 87,
+				count: 3
+			},
+			{
+				img: "img/just_medal.png",
+				name: "Супер медать 18 века",
+				price: 99,
 				count: 1
 			},
 			{
-				img: "img/bag_product.png",
-				name: "Чайник 18 века",
-				price: 99,
+				img: "img/just_oskar.png",
+				name: "Оскар обычный",
+				price: 249,
+				count: 2
+			},
+			{
+				img: "img/temp.png",
+				name: "Супер кубок",
+				price: 699,
 				count: 1
 			}
 		]
