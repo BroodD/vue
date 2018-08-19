@@ -310,10 +310,15 @@
 					<h4 class="font-22 text-center margin-b_40">Корзина</h4>
 				</div>
 			</div>
-			<div class="row border-bottom">
+			<div class="row border-bottom" v-if="products.length > 0">
 				<div class="col-11 offset-xl-1">
 					<span class="font-18 letter bold color-black">Товаров: </span>
 					<span class="color-blue bold">{{ products.length }}</span>
+				</div>
+			</div>
+			<div class="row border-bottom" v-else>
+				<div class="col-11 offset-xl-1">
+					<span class="font-18 letter bold color-black">Корзина пуста</span>
 				</div>
 			</div>
 			<div class="row align-items-center count__row border-bottom" v-for="(product, i) in products">

@@ -314,255 +314,30 @@
 						<div class="row const-title justify-content-between">
 							<div class="col-auto d-flex">
 								<p class="font bold">Арена: </p>
-								<p class="margin-l_45">{{ item[index].name }}</p>
+								<p class="margin-l_45">{{ choose[index].name }}</p>
 							</div>
 							<div class="col-auto d-flex">
 								<p class="font bold">Высота: </p>
-								<!-- <p class="margin-l_45">{{ it.height }} см</p> -->
+								<p class="margin-l_45">{{ choose[index].height }} см</p>
 							</div>
-						</div>
+						</div> 
 					</div>
 				</div>
 				<div class="row align-items-center const-row">
 					<div class="col-lg-4 const-left">
-						<div class="slick-wrap slick__1-const-1 slick-arrow-md_small">
-							<div v-for="(it, i) in item" class="slick__img">
+						<div :id="'slick__1-const-'+(index+1)"  class="slick-wrap slick__1-const-1 slick-arrow-md_small">
+							<div  v-for="(it, i) in item" class="slick__img">
 								<img :src="it.url" alt="">
 							</div>
 						</div>
 					</div>
 					<div class="col-lg-8 const-right">
-						<div class="slick-wrap slick__10-const-1 slick-const slick-arrow_prop slick-arrow-md_small">
+						<div :id="'slick__10-const-'+(index+1)" class="slick-wrap slick__10-const-1 slick-const slick-arrow_prop slick-arrow-md_small">
 							<div v-for="(it, i) in item" class="image">
 								<div class="const__img">
 									<img :src="it.url" alt="">
 								</div>
 							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-
-			<div class="row">
-				<div class="col-lg-8 offset-lg-4">
-					<div class="row const-title justify-content-between">
-						<div class="col-auto d-flex">
-							<p class="font bold">Арена: </p>
-							<p class="margin-l_45">Арена (синий мрамор)</p>
-						</div>
-						<div class="col-auto d-flex">
-							<p class="font bold">Высота: </p>
-							<p class="margin-l_45">110 см</p>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="row align-items-center const-row">
-				<div class="col-lg-4 const-left">
-					<div class="slick-wrap slick__1-const-2 slick-const slick-arrow-md_small">
-						<div class="slick__img"><img src="img/const_for_2.png" alt=""></div>
-						<div class="slick__img"><img src="img/const_for_2.png" alt=""></div>
-						<div class="slick__img"><img src="img/const_for_2.png" alt=""></div>
-						<div class="slick__img"><img src="img/const_for_2.png" alt=""></div>
-						<div class="slick__img"><img src="img/const_for_2.png" alt=""></div>
-						<div class="slick__img"><img src="img/const_for_2.png" alt=""></div>
-						<div class="slick__img"><img src="img/const_for_2.png" alt=""></div>
-						<div class="slick__img"><img src="img/const_for_2.png" alt=""></div>
-						<div class="slick__img"><img src="img/const_for_2.png" alt=""></div>
-						<div class="slick__img"><img src="img/const_for_2.png" alt=""></div>
-						<div class="slick__img"><img src="img/const_for_2.png" alt=""></div>
-						<div class="slick__img"><img src="img/const_for_2.png" alt=""></div>
-						<div class="slick__img"><img src="img/const_for_2.png" alt=""></div>
-						<div class="slick__img"><img src="img/const_for_2.png" alt=""></div>
-						<div class="slick__img"><img src="img/const_for_2.png" alt=""></div>
-						<div class="slick__img"><img src="img/const_for_2.png" alt=""></div>
-						<div class="slick__img"><img src="img/const_for_2.png" alt=""></div>
-						<div class="slick__img"><img src="img/const_for_2.png" alt=""></div>
-						<div class="slick__img"><img src="img/const_for_2.png" alt=""></div>
-						<div class="slick__img"><img src="img/const_for_2.png" alt=""></div>
-						<div class="slick__img"><img src="img/const_for_2.png" alt=""></div>
-						<div class="slick__img"><img src="img/const_for_2.png" alt=""></div>
-					</div>
-				</div>
-				<div class="col-lg-8 const-right const-left">
-					<div class="slick-wrap slick__10-const-2 slick-const slick-arrow_prop slick-arrow-md_small">
-						<div class="image">
-							<div class="const__img"><img src="img/const_detal.png" alt=""></div>
-						</div>
-						<div class="image">
-							<div class="const__img"><img src="img/const_detal.png" alt=""></div>
-						</div>
-						<div class="image">
-							<div class="const__img"><img src="img/const_detal.png" alt=""></div>
-						</div>
-						<div class="image">
-							<div class="const__img"><img src="img/const_detal.png" alt=""></div>
-						</div>
-						<div class="image">
-							<div class="const__img"><img src="img/const_detal.png" alt=""></div>
-						</div>
-						<div class="image">
-							<div class="const__img"><img src="img/const_detal.png" alt=""></div>
-						</div>
-						<div class="image">
-							<div class="const__img"><img src="img/const_detal.png" alt=""></div>
-						</div>
-						<div class="image">
-							<div class="const__img"><img src="img/const_detal.png" alt=""></div>
-						</div>
-						<div class="image">
-							<div class="const__img"><img src="img/const_detal.png" alt=""></div>
-						</div>
-						<div class="image">
-							<div class="const__img"><img src="img/const_detal.png" alt=""></div>
-						</div>
-						<div class="image">
-							<div class="const__img"><img src="img/const_detal.png" alt=""></div>
-						</div>
-						<div class="image">
-							<div class="const__img"><img src="img/const_detal.png" alt=""></div>
-						</div>
-						<div class="image">
-							<div class="const__img"><img src="img/const_detal.png" alt=""></div>
-						</div>
-						<div class="image">
-							<div class="const__img"><img src="img/const_detal.png" alt=""></div>
-						</div>
-						<div class="image">
-							<div class="const__img"><img src="img/const_detal.png" alt=""></div>
-						</div>
-						<div class="image">
-							<div class="const__img"><img src="img/const_detal.png" alt=""></div>
-						</div>
-						<div class="image">
-							<div class="const__img"><img src="img/const_detal.png" alt=""></div>
-						</div>
-						<div class="image">
-							<div class="const__img"><img src="img/const_detal.png" alt=""></div>
-						</div>
-						<div class="image">
-							<div class="const__img"><img src="img/const_detal.png" alt=""></div>
-						</div>
-						<div class="image">
-							<div class="const__img"><img src="img/const_detal.png" alt=""></div>
-						</div>
-						<div class="image">
-							<div class="const__img"><img src="img/const_detal.png" alt=""></div>
-						</div>
-						<div class="image">
-							<div class="const__img"><img src="img/const_detal.png" alt=""></div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="row">
-				<div class="col-8 offset-lg-4">
-					<div class="row const-title justify-content-between">
-						<div class="col-auto d-flex">
-							<p class="font bold">Арена: </p>
-							<p class="margin-l_45">Арена (синий мрамор)</p>
-						</div>
-						<div class="col-auto d-flex">
-							<p class="font bold">Высота: </p>
-							<p class="margin-l_45">110 см</p>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="row align-items-center const-row">
-				<div class="col-lg-4 const-left">
-					<div class="slick-wrap slick__1-const-3 slick-const slick-arrow-md_small">
-						<div class="slick__img"><img src="img/const_for_3.png" alt=""></div>
-						<div class="slick__img"><img src="img/const_for_3.png" alt=""></div>
-						<div class="slick__img"><img src="img/const_for_3.png" alt=""></div>
-						<div class="slick__img"><img src="img/const_for_3.png" alt=""></div>
-						<div class="slick__img"><img src="img/const_for_3.png" alt=""></div>
-						<div class="slick__img"><img src="img/const_for_3.png" alt=""></div>
-						<div class="slick__img"><img src="img/const_for_3.png" alt=""></div>
-						<div class="slick__img"><img src="img/const_for_3.png" alt=""></div>
-						<div class="slick__img"><img src="img/const_for_3.png" alt=""></div>
-						<div class="slick__img"><img src="img/const_for_3.png" alt=""></div>
-						<div class="slick__img"><img src="img/const_for_3.png" alt=""></div>
-						<div class="slick__img"><img src="img/const_for_3.png" alt=""></div>
-						<div class="slick__img"><img src="img/const_for_3.png" alt=""></div>
-						<div class="slick__img"><img src="img/const_for_3.png" alt=""></div>
-						<div class="slick__img"><img src="img/const_for_3.png" alt=""></div>
-						<div class="slick__img"><img src="img/const_for_3.png" alt=""></div>
-						<div class="slick__img"><img src="img/const_for_3.png" alt=""></div>
-						<div class="slick__img"><img src="img/const_for_3.png" alt=""></div>
-						<div class="slick__img"><img src="img/const_for_3.png" alt=""></div>
-						<div class="slick__img"><img src="img/const_for_3.png" alt=""></div>
-						<div class="slick__img"><img src="img/const_for_3.png" alt=""></div>
-						<div class="slick__img"><img src="img/const_for_3.png" alt=""></div>
-					</div>
-				</div>
-				<div class="col-lg-8 const-right">
-					<div class="slick-wrap slick__10-const-3 slick-const slick-arrow_prop slick-arrow-md_small">
-						<div class="image">
-							<div class="const__img"><img src="img/const_detal.png" alt=""></div>
-						</div>
-						<div class="image">
-							<div class="const__img"><img src="img/const_detal.png" alt=""></div>
-						</div>
-						<div class="image">
-							<div class="const__img"><img src="img/const_detal.png" alt=""></div>
-						</div>
-						<div class="image">
-							<div class="const__img"><img src="img/const_detal.png" alt=""></div>
-						</div>
-						<div class="image">
-							<div class="const__img"><img src="img/const_detal.png" alt=""></div>
-						</div>
-						<div class="image">
-							<div class="const__img"><img src="img/const_detal.png" alt=""></div>
-						</div>
-						<div class="image">
-							<div class="const__img"><img src="img/const_detal.png" alt=""></div>
-						</div>
-						<div class="image">
-							<div class="const__img"><img src="img/const_detal.png" alt=""></div>
-						</div>
-						<div class="image">
-							<div class="const__img"><img src="img/const_detal.png" alt=""></div>
-						</div>
-						<div class="image">
-							<div class="const__img"><img src="img/const_detal.png" alt=""></div>
-						</div>
-						<div class="image">
-							<div class="const__img"><img src="img/const_detal.png" alt=""></div>
-						</div>
-						<div class="image">
-							<div class="const__img"><img src="img/const_detal.png" alt=""></div>
-						</div>
-						<div class="image">
-							<div class="const__img"><img src="img/const_detal.png" alt=""></div>
-						</div>
-						<div class="image">
-							<div class="const__img"><img src="img/const_detal.png" alt=""></div>
-						</div>
-						<div class="image">
-							<div class="const__img"><img src="img/const_detal.png" alt=""></div>
-						</div>
-						<div class="image">
-							<div class="const__img"><img src="img/const_detal.png" alt=""></div>
-						</div>
-						<div class="image">
-							<div class="const__img"><img src="img/const_detal.png" alt=""></div>
-						</div>
-						<div class="image">
-							<div class="const__img"><img src="img/const_detal.png" alt=""></div>
-						</div>
-						<div class="image">
-							<div class="const__img"><img src="img/const_detal.png" alt=""></div>
-						</div>
-						<div class="image">
-							<div class="const__img"><img src="img/const_detal.png" alt=""></div>
-						</div>
-						<div class="image">
-							<div class="const__img"><img src="img/const_detal.png" alt=""></div>
-						</div>
-						<div class="image">
-							<div class="const__img"><img src="img/const_detal.png" alt=""></div>
 						</div>
 					</div>
 				</div>
@@ -573,10 +348,10 @@
 			<div class="row margin-b_40 margin-t_50">
 				<div class="col-sm-6 col-md-5 col-lg-4 col-xl-3 offset-md-0 offset-lg-1 offset-xl-2">
 					<div class="margin-b_40">
-						<span class="font bold const__desc">Общая стоимость:</span> <span class="font-22 color-blue">504 грн</span>
+						<span class="font bold const__desc">Общая стоимость:</span> <span class="font-22 color-blue">{{ gPrice }} грн</span>
 					</div>
 					<div>
-						<span class="font const__desc">Общая высота:</span> <span class="font">65 см</span>
+						<span class="font const__desc">Общая высота:</span> <span class="font">{{ gHeight }} см</span>
 					</div>
 				</div>
 				<div class="col-sm-6 col-md-7 col-lg-5 col-xl-4 offset-lg-1 margin-sm-t_30">
@@ -585,7 +360,7 @@
 			</div>
 			<div class="row justify-content-center">
 				<div class="col-auto col-lg-3 col-xl-2">
-					<input class="btn btn-blue text-center" value="Заказать"></a>
+					<button class="btn btn-blue text-center">Заказать</button>
 					<!-- <a class="btn btn-blue w-100 text-center">Заказать</a> -->
 				</div>
 			</div>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/font-awesome.min.css">
+	<link rel="stylesheet" href="css/styles.css">
+	<script src="js/vue.js"></script>
+</head>
+<body>
+	<div class="wrapper">
+		<div class="sample">
+
+			<div class="progress">
+				<div class="progress-bar" :style="progressWidth"></div>
+			</div>
+
+			<form v-if="!formSubmited" @submit.prevent="formSubmited = true">
+				<div class="form-group"
+						 v-for="(item, index) in info">
+					<label>{{ item.name }}</label>
+					<span class="fa"
+						v-if="controls[index].activated"
+						:class="controls[index].error ? 
+						'fa-exclamation-circle text-danger' : 
+						'fa-check-circle text-success'"
+						>
+					</span>
+					<input 
+						type="text" 
+						class="form-control"
+						:value="item.value"
+						@input="onInput(index, $event.target.value)">
+				</div>
+				<button class="btn btn-primary" :disabled="done < info.length" :class="{'btn-secondary': done < info.length}">Send Data</button>
+			</form>
+
+			<div v-else>
+				<table class="table table-bordered">
+					<tr v-for="(item, index) in  info">
+						<td>{{ item.name }}</td>
+						<td>{{ item.value }}</td>
+					</tr>
+				</table>
+				<button class="btn btn-primary" @click="formSubmited = !formSubmited">Back</button>
+			</div>
+
+		</div>
+	</div>
+
+	<script>
+		let app = new Vue({
+			el: '.wrapper',
+			data: {
+				controls: [],
+				formSubmited: false,
+				info: [
+					{
+						name: 'Name',
+						value: '',
+						pattern: /^[a-zA-Z]{2,30}$/
+					},
+					{
+						name: 'Phone',
+						value: '',
+						pattern: /^[0-9]{7,14}$/
+					},
+					{
+						name: 'Email',
+						value: '',
+						pattern: /^([a-z0-9_-]+\.)*[a-z0-9_-]+@[a-z0-9_-]+(\.[a-z0-9_-]+)*\.[a-z]{2,6}$/
+					},
+					{
+						name: 'Some field',
+						value: '',
+						pattern: /^[a-zA-Z]{2,30}$/
+					},
+				]
+			},
+			created() {
+				for(let i=0; i<this.info.length; i++) {
+					this.controls.push({
+						error: !this.info[i].pattern.test(this.info[i].value),
+						activated: this.info[i].value !== ''
+					})
+				}
+			},
+			methods: {
+				onInput(index, value) {
+					let data    = this.info[index];
+					let control = this.controls[index];
+
+					data.value = value;
+					control.error = !data.pattern.test(value);
+					control.activated = true;
+				}
+			},
+			computed: {
+				done() {
+					let done = 0;
+
+					for(let i=0; i<this.controls.length; i++) {
+						if( !this.controls[i].error ) {
+							done++;
+						}
+					}
+
+					return done;
+				},
+				progressWidth() {
+					return {
+						width: (this.done / this.info.length * 100) + '%'
+					}
+				}
+			}
+		})
+	</script>	
+</body>
+</html>

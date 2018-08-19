@@ -69,84 +69,37 @@ $(document).ready(function(){
 		]
 	});
 
+	// for( let i=1; i<3; i++) {
+	// 	$('#slick__1-const-' + i).slick({
+	// 		slidesToShow: 1,
+	// 		infinite: true,
+	// 		swipeToSlide: true,
+	// 		// focusOnSelect: true
+	// 		asNavFor: '#slick__10-const-' + i,
+	// 	});
+	// 	$('#slick__10-const-' + i).slick({
+	// 		slidesToShow: 1,
+	// 		infinite: true,
+	// 		// slidesToScroll: 1,
+	// 		// rows: 2,
+	// 		touchThreshold: 15,
+	// 		swipeToSlide: true,
+	// 		focusOnSelect: true,
+	// 		asNavFor: '#slick__1-const-' + i,
+	// 		responsive: [
+	// 			{
+	// 				breakpoint: 576,
+	// 				settings: {
+	// 					slidesToShow: 5,
+	// 				}
+	// 			},
+	// 		]
+	// 	});
+	// 	// $('#slick__1-const-' + i).on('beforeChange', function(event, slick, direction){
+	// 	// 	console.log('edge was hit');
+	// 	// });
+	// }
 
-	$('.slick__1-const-1').slick({
-		slidesToShow: 1,
-		infinite: true,
-		swipeToSlide: true,
-		// focusOnSelect: true
-		asNavFor: '.slick__10-const-1',
-	});
-	$('.slick__10-const-1').slick({
-		slidesToShow: 1,
-		infinite: true,
-		// slidesToScroll: 1,
-		// rows: 2,
-		touchThreshold: 15,
-		swipeToSlide: true,
-		focusOnSelect: true,
-		asNavFor: '.slick__1-const-1',
-		responsive: [
-			{
-				breakpoint: 576,
-				settings: {
-					slidesToShow: 5,
-				}
-			},
-		]
-	});
-	
-	$('.slick__1-const-2').slick({
-		slidesToShow: 1,
-		infinite: true,
-		swipeToSlide: true,
-		// focusOnSelect: true
-		asNavFor: '.slick__10-const-2',
-	});
-	$('.slick__10-const-2').slick({
-		slidesToShow: 10,
-		infinite: true,
-		// slidesToScroll: 1,
-		rows: 2,
-		touchThreshold: 15,
-		swipeToSlide: true,
-		focusOnSelect: true,
-		asNavFor: '.slick__1-const-2',
-		responsive: [
-			{
-				breakpoint: 576,
-				settings: {
-					slidesToShow: 5,
-				}
-			},
-		]
-	});
-
-	$('.slick__1-const-3').slick({
-		slidesToShow: 1,
-		infinite: true,
-		swipeToSlide: true,
-		// focusOnSelect: true
-		asNavFor: '.slick__10-const-3',
-	});
-	$('.slick__10-const-3').slick({
-		slidesToShow: 10,
-		infinite: true,
-		// slidesToScroll: 1,
-		rows: 2,
-		touchThreshold: 15,
-		swipeToSlide: true,
-		focusOnSelect: true,
-		asNavFor: '.slick__1-const-3',
-		responsive: [
-			{
-				breakpoint: 576,
-				settings: {
-					slidesToShow: 5,
-				}
-			},
-		]
-	});
 
 
 	$('.slick__for').slick({
