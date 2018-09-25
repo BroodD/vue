@@ -5,67 +5,67 @@ var constructor = new Vue({
 		items: [
 			[
 				{
-					name: "Шось тупе",
+					name: "Арена (синий мрамор)",
 					height: "12",
 					url: "img/const_for_1.png",
 					price: 53
 				},
 				{
-					name: "Шось кругле",
+					name: "Арена 1",
 					height: "90",
 					url: "img/const_for_1.png",
 					price: 98
 				},
 				{
-					name: "Вроді ваза",
+					name: "Арена 2",
 					height: "56",
 					url: "img/const_for_1.png",
 					price: 86
 				},
 				{
-					name: "Чи тарілка?",
+					name: "Арена 3",
 					height: "56",
 					url: "img/const_for_1.png",
 					price: 86
 				},
 				{
-					name: "Може ананас",
+					name: "Арена 4",
 					height: "32",
 					url: "img/const_for_1.png",
 					price: 21
 				},
 				{
-					name: "Не, в мене алергія",
+					name: "Арена 5",
 					height: "12",
 					url: "img/const_for_1.png",
 					price: 53
 				},
 				{
-					name: "Тоді аскурбінку",
+					name: "Арена 6",
 					height: "90",
 					url: "img/const_for_1.png",
 					price: 98
 				},
 				{
-					name: "О доза!!",
+					name: "Арена 6",
 					height: "56",
 					url: "img/const_for_1.png",
 					price: 86
 				},
 				{
-					name: "Останій",
+					name: "Арена 7",
 					height: "32",
 					url: "img/const_for_1.png",
 					price: 21
 				},
 				{
-					name: "Намахав",
+					name: "Арена 8",
 					height: "32",
 					url: "img/const_for_1.png",
 					price: 9023213
 				},
 				{
-					name: "Давай ще раз крутани",
+					name: "Арена 9",
 					height: "32",
 					url: "img/const_for_1.png",
 					price: 6005
@@ -73,68 +73,67 @@ var constructor = new Vue({
 			],
 			[
 				{
-					name: "Якась кругла штука",
+					name: "Подставка",
 					height: "123",
 					url: "img/const_for_2.png",
 					price: 5
 				},
 				{
-					name: "Лисий Дмитро",
+					name: "Подставка 2",
 					height: "56",
 					url: "img/const_for_2.png",
 					price: 37
 				},
 				{
-					name: "Миска для пса",
+					name: "Подставка 3",
 					height: "75",
 					url: "img/const_for_2.png",
 					price: 61
 				},
 				{
-					name: "Арена бою",
+					name: "Подставка 4",
 					height: "98",
 					url: "img/const_for_2.png",
 					price: 89
 				},
 				{
-					name: "Підставка",
+					name: "Подставка 5",
 					height: "123",
 					url: "img/const_for_2.png",
 					price: 5
 				},
 				{
-					name: "Білий Василь",
+					name: "Подставка 6",
 					height: "56",
 					url: "img/const_for_2.png",
 					price: 37
 				},
 				{
-					name: "Россссомаха",
+					name: "Подставка 7",
 					height: "75",
 					url: "img/const_for_2.png",
 					price: 61
 				},
 				{
-					name: "Підставка для ноутбука",
+					name: "Подставка 8",
 					height: "98",
 					url: "img/const_for_2.png",
 					price: 89
 				},
-
 				{
-					name: "Чмирік",
+					name: "Подставка 9",
 					height: "56",
 					url: "img/const_for_2.png",
 					price: 37
 				},
 				{
-					name: "Костиль",
+					name: "Подставка 10",
 					height: "75",
 					url: "img/const_for_2.png",
 					price: 61
 				},
 				{
-					name: "Макарон",
+					name: "Подставка 11",
 					height: "98",
 					url: "img/const_for_2.png",
 					price: 89
@@ -142,67 +141,67 @@ var constructor = new Vue({
 			],
 			[
 				{
-					name: "Хз шо (але дорого)",
+					name: "Нижняя арена",
 					height: "123",
 					url: "img/const_for_3.png",
 					price: 999
 				},
 				{
-					name: "Чорний Василь",
+					name: "Нижняя арена 1",
 					height: "56",
 					url: "img/const_for_3.png",
 					price: 373
 				},
 				{
-					name: "Оріфлейм натурейшин",
+					name: "Нижняя арена 2",
 					height: "75",
 					url: "img/const_for_3.png",
 					price: 6122
 				},
 				{
-					name: "Стиглий ананас",
+					name: "Нижняя арена 3",
 					height: "98",
 					url: "img/const_for_3.png",
 					price: 895
 				},
 				{
-					name: "Миска",
+					name: "Нижняя арена 4",
 					height: "123",
 					url: "img/const_for_3.png",
 					price: 56
 				},
 				{
-					name: "Чорний Василь",
+					name: "Нижняя арена 5",
 					height: "56",
 					url: "img/const_for_3.png",
 					price: 373
 				},
 				{
-					name: "Оріфлейм натурейшин",
+					name: "Нижняя арена 6",
 					height: "75",
 					url: "img/const_for_3.png",
 					price: 6122
 				},
 				{
-					name: "Стиглий ананас",
+					name: "Нижняя арена 7",
 					height: "98",
 					url: "img/const_for_3.png",
 					price: 895
 				},
 				{
-					name: "Оріфлейм натурейшин",
+					name: "Нижняя арена 8",
 					height: "75",
 					url: "img/const_for_3.png",
 					price: 6122
 				},
 				{
-					name: "Стиглий ананас",
+					name: "Нижняя арена 9",
 					height: "98",
 					url: "img/const_for_3.png",
 					price: 895
 				},
 				{
-					name: "Миска",
+					name: "Нижняя арена 10",
 					height: "98",
 					url: "img/const_for_3.png",
 					price: 895
