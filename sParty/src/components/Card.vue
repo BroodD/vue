@@ -91,7 +91,7 @@
 							</v-card-actions>
 						</v-flex>
 
-						<v-flex md6>
+						<v-flex xs12 md6>
 							<v-layout>
 								<v-flex xs12>
 									<v-carousel>

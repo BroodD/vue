@@ -50,8 +50,8 @@
     <v-toolbar 
 			app
 			dark
-			color="primary"
-			
+			color="teal"
+			dense
 		>
       <v-toolbar-side-icon
         @click="drawer = !drawer"
@@ -70,7 +70,6 @@
           :key="link.title"
 					:to="link.url"
       		offset-y
-					class="primary"
 			>
 				<v-btn
 					slot="activator"
@@ -155,6 +154,9 @@ export default {
 </script>
 
 <style>
+	.v-content__wrap {
+		background-color: #e1e1e1;
+	}
 	.pointer {
 		cursor: pointer;
 		text-decoration: none;
