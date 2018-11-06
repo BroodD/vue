@@ -14,11 +14,19 @@
                 label="Name"
                 type="text"
                 v-model="name"
-                :rules="nameRules"
+                :rules="[ v => !!v || 'Name is required' ]"
+              ></v-text-field>
+              <v-text-field
+                prepend-icon="alternate_email"
+                name="email"
+                label="Email"
+                type="email"
+                v-model="email"
+                :rules="emailRules"
               ></v-text-field>
 							<v-dialog
-								ref="dialog"
-								v-model="modal"
+								ref="date"
+								v-model="dateModal"
 								:return-value.sync="date"
 								persistent
 								lazy
@@ -31,17 +39,10 @@
 									label="Date birth"
 									prepend-icon="event"
 									readonly
+									:rules="dateRules"
 								></v-text-field>
-								<v-date-picker v-model="date" @input="$refs.dialog.save(date)"></v-date-picker>
+								<v-date-picker v-model="date" @input="$refs.date.save(date)"></v-date-picker>
 							</v-dialog>
-              <v-text-field
-                prepend-icon="alternate_email"
-                name="email"
-                label="Email"
-                type="email"
-                v-model="email"
-                :rules="emailRules"
-              ></v-text-field>
               <v-text-field
                 prepend-icon="lock"
                 name="password"
@@ -60,6 +61,26 @@
                 v-model="confirmPassword"
                 :rules="confirmPasswordRules"
               ></v-text-field>
+							<v-layout row wrap>
+								<v-flex md4>
+									<img :src="imageSrc" v-if="imageSrc">
+								</v-flex>
+							</v-layout>
+							<v-layout row class="mb-3">
+								<v-flex xs12>
+									<v-btn dark class="primary" @click="triggerUpload">
+										Upload photo
+										<v-icon right dark>cloud_upload</v-icon>
+									</v-btn>
+									<input
+										ref="fileInput"
+										type="file"
+										style="display: none;"
+										accept="image/*"
+										@change="onFileChange"
+									>
+								</v-flex>
+							</v-layout>
             </v-form>
           </v-card-text>
           <v-card-actions>
@@ -68,7 +89,7 @@
               color="primary"
               @click="onSubmit"
               :loading="loading"
-              :disabled="!valid || loading"
+              :disabled="!valid || !image || loading"
             >Create account!</v-btn>
           </v-card-actions>
         </v-card>
@@ -84,19 +105,23 @@
     data () {
       return {
 				name: '',
-				dialog: '',
-				modal: '',
+				dateModal: '',
+				dateModal: '',
+				date: '',
         email: '',
         password: '',
-        confirmPassword: '',
+				confirmPassword: '',
+				image: '',
+				imageSrc: '',
         valid: false,
-        nameRules: [
-          v => !!v || 'Name is required',
-        ],
         emailRules: [
           v => !!v || 'E-mail is required',
           v => emailRegex.test(v) || 'E-mail must be valid'
         ],
+				dateRules: [
+					v => !!v || 'Date is required',
+					v => (new Date(Date.parse(v)) < new Date) || 'Date must be more or equal today'
+				],
         passwordRules: [
           v => !!v || 'Password is required',
           v => (v && v.length >= 6) || 'Password must be equal or more than 6 characters'
@@ -104,28 +129,43 @@
         confirmPasswordRules: [
           v => !!v || 'Password is required',
           v => v === this.password || 'Password should match'
-        ]
+				],
       }
     },
     computed: {
-      // loading () {
-      //   return this.$store.getters.loading
-      // }
+      loading () {
+        return this.$store.getters.loading
+      }
     },
     methods: {
       onSubmit () {
-        if (this.$refs.form.validate()) {
+        if (this.$refs.form.validate() && this.image) {
           const user = {
             email: this.email,
-            password: this.password
+						password: this.password,
+						name: this.name,
+						image: this.image
           }
 
-          // this.$store.dispatch('registerUser', user)
-          //   .then(() => {
-          //     this.$router.push('/')
-          //   })
-          //   .catch(() => {})
+          this.$store.dispatch('registerUser', user)
+            .then(() => {
+              this.$router.push('/')
+            })
+            .catch(() => {})
         }
+			},
+			triggerUpload () {
+        this.$refs.fileInput.click()
+      },
+      onFileChange (event) {
+        const file = event.target.files[0]
+
+        const reader = new FileReader()
+        reader.onload = e => {
+          this.imageSrc = reader.result
+        }
+        reader.readAsDataURL(file)
+        this.image = file
       }
     }
   }

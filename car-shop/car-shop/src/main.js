@@ -6,7 +6,7 @@ import Vuetify from 'vuetify'
 import * as fb from 'firebase'
 import 'vuetify/dist/vuetify.min.css'
 
-Vue.use(Vuetify)
+// Vue.use(Vuetify)
 
 Vue.config.productionTip = false
 

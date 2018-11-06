@@ -5,11 +5,20 @@ import App from './App'
 import router from './router'
 import store from './store'
 import Vuetify from 'vuetify'
+import * as fb from 'firebase'
 import 'vuetify/dist/vuetify.min.css'
 
-Vue.use(Vuetify)
 
-Vue.config.productionTip = false
+Vue.config.devtools = true
+
+
+Vue.use(Vuetify, {
+	theme: {
+		primary: '#097275'
+	}
+})
+
+// Vue.config.productionTip = false
 
 /* eslint-disable no-new */
 new Vue({
@@ -17,5 +26,24 @@ new Vue({
 	router,
 	store,
   components: { App },
-  template: '<App/>'
+	template: '<App/>',
+	created() {
+		fb.initializeApp({
+			apiKey: "AIzaSyB1B2yJmi94g0hGCMvPnpsJ7CbXzR2wL4I",
+			authDomain: "sparty-3251e.firebaseapp.com",
+			databaseURL: "https://sparty-3251e.firebaseio.com",
+			projectId: "sparty-3251e",
+			storageBucket: "sparty-3251e.appspot.com",
+			messagingSenderId: "435493051386"
+		})
+
+		fb.auth().onAuthStateChanged(user => {
+			if (user) {
+				this.$store.dispatch('autoLoginUser', user)
+			}
+		})
+		
+		// this.$store.dispatch('createCard')
+		this.$store.dispatch('fetchCards')
+	}
 })

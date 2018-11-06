@@ -1,0 +1,13 @@
+.num {
+  margin: 0;
+  margin-bottom: 15px;
+}
+
+.red {
+  background-color: tomato;
+}
+
+.cell {
+  height: 40px;
+  /*border: 1px solid black;*/
+}

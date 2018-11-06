@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Captcha</title>
+
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="wrap">
+    <div class="container">
+      <div class="row">
+
+        <template
+          v-for="num in countNumber"
+          >
+            <div class="num col-3 row">
+            
+              <div
+                v-for="n in numbers[num]"
+                class="cell col-4"
+                :class="n ? 'red' : ''"
+              ></div>
+
+            </div>
+        </template>
+
+      </div>
+
+      <div class="row">
+        <div class="form-group col-12">
+          <label for="exampleInputPassword1">Captcha</label>
+          <input
+            v-model.number="input"
+            type="number"
+            class="form-control"
+          >
+        </div>
+        <div class="col-12">
+          <div
+            class="alert"
+            v-if="input"
+            :class="input == result ? 'alert-primary' : 'alert-danger'"
+            role="alert"
+          >
+            {{ input }}
+          </div>
+          <div
+            class="alert alert-warning"
+            role="alert">
+            Result: {{ result }}
+          </div>
+        </div>
+      </div>
+     </div>
+  </div>
+
+  <script src="js/vue.js"></script>
+  <script src="js/script.js"></script>
+</body>
+</html>

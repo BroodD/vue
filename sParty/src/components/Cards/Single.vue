@@ -3,52 +3,13 @@
 		<v-layout row wrap>
 			<v-flex xs12>
 				<v-card
-					class="mx-auto"
+					class="elevation-12"
 				>
-					<!-- <v-layout>
-						<v-flex xs6 d-flex>
-							<v-img
-								src="https://cdn.vuetifyjs.com/images/ratings/fortnite1.png"
-							></v-img>
-						</v-flex>
-						<v-flex xs6>
-							<v-container
-								grid-list-md
-								pa-0
-							>
-								<v-layout wrap>
-									<v-flex md7 d-flex>
-										<v-img
-											src="https://cdn.vuetifyjs.com/images/ratings/fortnite2.png"
-										></v-img>
-									</v-flex>
-									<v-flex md5 d-flex>
-										<v-img
-											src="https://cdn.vuetifyjs.com/images/ratings/fortnite3.png"
-										></v-img>
-									</v-flex>
-									<v-flex md5 d-flex>
-										<v-img
-											src="https://cdn.vuetifyjs.com/images/ratings/fortnite4.png"
-										></v-img>
-									</v-flex>
-									<v-flex md7 d-flex>
-										<v-img
-											src="https://cdn.vuetifyjs.com/images/ratings/fortnite5.png"
-										></v-img>
-									</v-flex>
-								</v-layout>
-							</v-container>
-						</v-flex>
-					</v-layout> -->
-
-					
-
 					<v-layout row wrap>
 						<v-flex md6>
 							<v-card-title class="align-start">
 								<div>
-									<div class="headline">FORTNITE</div>
+									<div class="headline">{{ card.title }}</div>
 									<div class="grey--text">
 										<span>Video game</span>
 										<span>|</span>
@@ -64,7 +25,7 @@
 								</div>
 							</v-card-title>
 							<div class="pa-3 pt-0 caption">
-								Lorem ipsum dolor, sit amet consectetur adipisicing elit. Illum, impedit non possimus ducimus labore natus maxime in iure omnis esse nostrum aut. Est beatae, illum eligendi aliquam fuga magnam sunt minus blanditiis velit cumque debitis pariatur facere soluta distinctio voluptatem rem incidunt vitae ex magni, ab, vel perferendis? Sequi aperiam nisi voluptatem sapiente, iusto quis debitis aut, necessitatibus quam aliquid fugit dolores earum iste error dignissimos doloremque suscipit reiciendis repellendus neque eum voluptatibus ab et. Delectus consequatur laboriosam ut porro ipsam nemo vitae quaerat molestiae fugiat facere dicta, animi labore ea laborum, ipsum ratione. Consequuntur sequi voluptas explicabo dolorem, rerum minima illo commodi iste dolorum quis quae ex delectus nobis natus cum. In dolorem doloremque dolores repudiandae, odit rem corporis laborum corrupti quam. Enim voluptas perspiciatis non rem suscipit eos nisi culpa! Quo cum illum assumenda quod adipisci id suscipit sunt harum optio reiciendis, quae expedita praesentium laudantium facere quidem.
+								{{ card.desc }}
 							</div>
 
 							<v-card-actions>
@@ -72,8 +33,12 @@
 									<span>10023</span>
 									<v-icon right>remove_red_eye</v-icon>
 								</v-btn> -->
-								<v-btn flat color="green">
-									<span>10 / 5</span>
+								<v-btn
+									flat
+									:color=" (card.visit !== undefined && card.visit.length < card.people ) ? 'red' : 'primary'"
+								>
+									<span v-if="card.visit !== undefined">{{ card.visit.length }} / {{ card.people }}</span>
+									<span v-else>{{ card.people }}</span>
 									<v-icon right>people</v-icon>
 								</v-btn>
 								<v-btn flat>
@@ -82,10 +47,10 @@
 								</v-btn>
 								<v-btn 
 									flat
-									:class="fav ? 'red--text' : ''"
-									@click="fav = !fav"
+									:color="card.like.lastIndexOf(userId) !== -1 ? 'red' : ''"
+									@click="toggLike(card.id)"
 								>
-									<span>559</span>
+									<span>{{ card.like.length }}</span>
 									<v-icon right>favorite</v-icon>
 								</v-btn>
 							</v-card-actions>
@@ -94,13 +59,32 @@
 						<v-flex xs12 md6>
 							<v-layout>
 								<v-flex xs12>
-									<v-carousel>
-										<v-carousel-item
-											v-for="(photo,i) in photos"
-											:key="i"
-											:src="photo.src"
-										></v-carousel-item>
-									</v-carousel>
+									<v-img
+										v-if="card.img.length == 1"
+										:src="card.img[0]"
+										max-height="400px"
+										position="top"
+									>
+									</v-img>
+
+									<v-layout
+										v-else-if="card.img.length > 1"
+									>
+										<v-flex xs12 d-flex>
+											<v-layout>
+												<v-flex xs12>
+													<v-carousel>
+														<v-carousel-item
+															v-for="(img, i) in card.img"
+															:key="i"
+															:src="img"
+															position="top"
+														></v-carousel-item>
+													</v-carousel>
+												</v-flex>
+											</v-layout>
+										</v-flex>
+									</v-layout>
 								</v-flex>
 							</v-layout>
 						</v-flex>
@@ -132,6 +116,7 @@
 							<v-textarea
 								box
 								label="Your comment"
+								v-model="text"
 							></v-textarea>
 							<v-btn color="primary">Send</v-btn>
 						</v-flex>
@@ -147,20 +132,7 @@ export default {
 	props: ['id'],
 	data () {
 		return {
-			photos: [
-				{
-					src: 'https://cdn.vuetifyjs.com/images/ratings/fortnite2.png'
-				},
-				{
-					src: 'https://cdn.vuetifyjs.com/images/ratings/fortnite3.png'
-				},
-				{
-					src: 'https://cdn.vuetifyjs.com/images/ratings/fortnite4.png'
-				},
-				{
-					src: 'https://cdn.vuetifyjs.com/images/ratings/fortnite5.png'
-				}
-			],
+			text: '',
 			reviews: [
 				{
 					avatar: 'https://cdn.vuetifyjs.com/images/lists/1.jpg',
@@ -178,6 +150,23 @@ export default {
 					subtitle: "Sandra Adams &mdash; Do you have Paris recommendations? Have you ever been?"
 				},
 			]
+		}
+	},
+	computed: {
+		card () {
+			const id = this.id
+			return this.$store.getters.cardById(id)
+		},
+		userId () {
+			return this.$store.getters.userId
+		}
+	},
+	methods: {
+		toggLike (id) {
+			this.$store.dispatch('toggleLike', id)
+		},
+		addComment () {
+			// this.$store.dispatch('addComment', {id, text})
 		}
 	}
 }

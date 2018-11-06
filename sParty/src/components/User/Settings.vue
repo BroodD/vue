@@ -31,9 +31,17 @@
                 v-model="name"
                 :rules="nameRules"
               ></v-text-field>
+              <v-text-field
+                prepend-icon="alternate_email"
+                name="email"
+                label="Email"
+                type="email"
+                v-model="email"
+                :rules="emailRules"
+              ></v-text-field>
 							<v-dialog
 								ref="dialog"
-								v-model="modal"
+								v-model="dateModal"
 								:return-value.sync="date"
 								persistent
 								lazy
@@ -49,14 +57,6 @@
 								></v-text-field>
 								<v-date-picker v-model="date" @input="$refs.dialog.save(date)"></v-date-picker>
 							</v-dialog>
-              <v-text-field
-                prepend-icon="alternate_email"
-                name="email"
-                label="Email"
-                type="email"
-                v-model="email"
-                :rules="emailRules"
-              ></v-text-field>
               <v-text-field
                 prepend-icon="lock"
                 name="password"
@@ -90,8 +90,8 @@ export default {
 	data () {
 		return {
 			name: '',
-			dialog: '',
-			modal: '',
+			dateModal: false,
+			date: '',
 			email: '',
 			password: '',
 			confirmPassword: '',
