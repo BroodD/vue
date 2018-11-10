@@ -80,7 +80,7 @@ var
       0, 0, 1,
       1, 1, 1,
     ]
-  ]
+  ];
 
 class Captcha {
   constructor(box, input, message, min = 4, max = 8) {
@@ -88,7 +88,7 @@ class Captcha {
     this.countMax = max,
 
     this.input = '',
-    // this.result = ''
+    this.result = ''
 
     this.generate(),
 
@@ -133,11 +133,17 @@ class Captcha {
     let msg = document.querySelector(message);
     let _self = this;
 
+    inp.value = '';
+
     inp.addEventListener('input', function () {
       _self.input = this.value
       if(_self.valid()) {
         msg.innerText = "Okey";
+        msg.classList.remove('alert-danger');
+        msg.classList.add('alert-primary');
       } else {
+        msg.classList.remove('alert-primary');
+        msg.classList.add('alert-danger');
         msg.innerText = "Error";
       }
     })
