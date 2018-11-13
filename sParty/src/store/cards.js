@@ -28,13 +28,15 @@ export default {
     loadCards (state, payload) {
       state.cards = payload
 		},
-		toggleLike (state, {userId, id}) {
+		toggleLike (state, {user, id}) {
 			const card = state.cards.find(c => {
 				return c.id === id
 			})
-			let index = card.like.lastIndexOf(userId) 
+      console.log(state.cards)
+      console.log(id)
+			let index = card.like.lastIndexOf(user) 
 			if (index == -1)
-				card.like.push(userId)
+				card.like.push(user)
 			else 
 				card.like.splice(index, 1)
 		},
@@ -136,19 +138,19 @@ export default {
         throw error
       }
 		},
-		async toggleLike ({commit, getters}, {id, text}) {
+		async toggleLike ({commit, getters}, id) {
 			commit('clearError')
 			commit('setLoading', true)
 			
-			const user = getters.user
+			const user = getters.userId
 
-			if( user.id ) {
+			if( user ) {
 				// try
 				// async code database...
 				// await fb.database().ref('cards/' + id + '/like').update({
 				// 	'10': '9012'
 				// })
-				commit('addComment', {id, user, text})
+				commit('toggleLike', {user, id})
 				commit('setLoading', false)
 			} else {
 				commit('setLoading', false)
