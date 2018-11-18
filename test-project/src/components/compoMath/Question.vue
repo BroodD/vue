@@ -51,9 +51,6 @@
 			}
 		},
 		methods: {
-			show(i) {
-				alert("awd"+i);
-			},
 			onAnswer(num) {
 				if(num == this.good) {
 					this.$emit('success');
