@@ -34,7 +34,7 @@
     <div class="col-12">
       <div
         v-for="(row, i) in cells"
-        class="row"
+        class="row flex-nowrap"
       >
         <div
           v-for="(cell, j) in row"
@@ -69,6 +69,8 @@ export default {
       height: 6,
       mineCount: 5,
       cells: [],
+
+      lockCount: 0,
       openCount: 0,
 
       stage: ''
@@ -84,7 +86,19 @@ export default {
     fill () {
       this.cells = [];
       this.openCount = 0;
+      this.lockCount = 0;
       this.stage = '';
+
+      // if inputs vals !good then set normal
+      if( this.width < 6 || !parseInt(this.width) ) this.width = 6;
+      if( this.height < 6 || !parseInt(this.height) ) this.height = 6;
+      if( this.width > 30 ) this.width = 30;
+      if( this.height > 30 ) this.height = 30;
+
+      if( this.mineCount >= (this.width * this.height) )
+        this.mineCount = parseInt(this.width * this.height) - 2;
+      if( this.mineCount < 6 || !parseInt(this.mineCount) )
+        this.mineCount = 6;
 
       // generate fields grid
       for (let i = 0; i < this.width; i++) {
@@ -94,9 +108,6 @@ export default {
         }
         this.cells.push(temp)
       }
-
-      if( parseInt(this.mineCount) >= parseInt(this.width * this.height) )
-        this.mineCount = parseInt(this.width * this.height) - 1;
 
       // sets mines
       for(let i = 0; i < this.mineCount;) {
@@ -139,8 +150,14 @@ export default {
 
     open (x, y) {
       if( (this.cells[x][y].isLock || this.cells[x][y].isOpen || this.stage) ) return;
+      
       if( this.cells[x][y].isMine ) {
-        this.stage = 'lose';
+        // dont lose on start (first click)
+        if(this.openCount == 0)
+          this.fill(),
+          this.open(x,y);
+        else
+          this.stage = 'lose';
       } else {
         this.$set(this.cells[x][y], 'isOpen', true);
         this.openCount++;
@@ -158,15 +175,29 @@ export default {
     },
 
     lock (x, y) {
-      if( !(this.cells[x][y].isOpen && this.stage) )
-        this.$set(this.cells[x][y], 'isLock', !this.cells[x][y].isLock);
+      if( !(this.cells[x][y].isOpen || this.stage) )
+        this.lockCount++, this.$set(this.cells[x][y], 'isLock', !this.cells[x][y].isLock);
     }
 
   },
+
+  created () {
+    this.fill();
+  }
 }
 </script>
 
 <style>
+.row:nth-child(2n+1) .cell:nth-child(2n),
+.row:nth-child(2n) .cell:nth-child(2n+1) {
+/*.row:nth-child(2n) .cell:nth-child(2n), {*/
+  background-color: #6b6b6b;
+}
+.row:nth-child(2n) .cell:nth-child(2n),
+.row:nth-child(2n+1) .cell:nth-child(2n+1) {
+  background-color: #5d5d5d;
+}
+
 .cell {
   position: relative;
   height: 40px;
@@ -189,20 +220,21 @@ export default {
   transition: opacity 400ms ease;
 }
 .cell:hover {
-  opacity: 0.4;
+  opacity: 0.6;
 }
 
 .mine {
-  background-color: tomato;
+  background-color: tomato !important;
 }
 
 .open {
-  background-color: #3e94e7;
+  background-color: #3e94e7 !important;
   color: #fff;
+  opacity: 1 !important;
 }
 
 .lock {
-  background-color: #b3b3b3;
+  background-color: #b3b3b3 !important;
 }
 .lock::after {
   content: '';
@@ -213,6 +245,13 @@ export default {
   width: 15px;
   height: 15px;
   background-color: #FFC628;
+
   border-radius: 50%;
+
+  /*background-image: url('assets/flag.svg');
+  background-color: white;
+  background-size: 50%;
+  background-repeat: no-repeat;
+  background-position: center;*/
 }
 </style>
