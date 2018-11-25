@@ -2,32 +2,38 @@
   <div class="container">
     <div class="row">
       <div class="col-sm-12">
-        <label class="form-group">
-          Number of rows
-          <input class="form-control" v-model="width">
-        </label>
-        <label class="form-group">
-          Number of cols
-          <input class="form-control" v-model="height">
-        </label>
-        <label class="form-group">
-          Number of miners
-          <input class="form-control" v-model="mineCount">
-        </label>
-        <label class="form-group">
-          <input
-          class="form-control btn-primary" 
-          type="submit" 
-          value="Start"
-          @click="fill"
-          >
-        </label>
+        <form @submit.prevent="fill">
+            
+          <label class="form-group">
+            Number of rows
+            <input class="form-control" v-model="width">
+          </label>
+          <label class="form-group">
+            Number of cols
+            <input class="form-control" v-model="height">
+          </label>
+          <label class="form-group">
+            Number of miners
+            <input class="form-control" v-model="mineCount">
+          </label>
+          <label class="form-group">
+            <input
+            class="form-control btn-primary" 
+            type="submit" 
+            value="Start"
+            @click="fill"
+            >
+          </label>
+        </form>
 
         <h3
           v-show="stage"
           class="alert"
           :class="{ 'alert-success': stage == 'win', 'alert-danger': stage == 'lose' }"
-        >{{ stage.toUpperCase() }}</h3>
+        >
+          {{ stage.toUpperCase() }}
+        </h3>
+
       </div>
     </div>
 
@@ -188,6 +194,7 @@ export default {
 </script>
 
 <style>
+
 .row:nth-child(2n+1) .cell:nth-child(2n),
 .row:nth-child(2n) .cell:nth-child(2n+1) {
 /*.row:nth-child(2n) .cell:nth-child(2n), {*/

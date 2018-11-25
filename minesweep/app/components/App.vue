@@ -1,6 +1,18 @@
 <template>
   <Page>
-    <ActionBar title="Minesweeper"/>
+    <ActionBar title="Minesweeper">
+      <ActionItem
+        @tap="fill"
+        ios.systemIcon="13" ios.position="left"
+        android.systemIcon="ic_menu_refresh" android.position="actionBar"
+      />
+      <ActionItem
+        @tap="showSett = !showSett"
+        ios.systemIcon="7" ios.position="right"
+        text="settings" android.position="popup"
+      />
+    </ActionBar>
+
     
     <ScrollView orientation="vertical">
       <StackLayout>
@@ -11,17 +23,11 @@
           :class="{ 'alert-success': stage == 'win', 'alert-danger': stage == 'lose' }"
         />
 
-        <WrapLayout
-          orientation="horizontal"
-          backgroundColor="lightgray"
-          horizontalAlignment="center"
+        <StackLayout
         >
-
-          <WrapLayout
+          <FlexboxLayout
             v-for="(row, i) in cells"
-            orientation="horizontal"
-            :itemWidth="40" itemHeight="40"
-            class="flex-nowrap"
+            horizontalAlignment="center"
           >
             <Button
               v-for="(cell, j) in row"
@@ -32,28 +38,21 @@
               @tap="open(i, j)"
               @longPress="lock(i, j)"
             />
-          </WrapLayout>
+          </FlexboxLayout>
+        </StackLayout>
 
-        </WrapLayout>
+        <StackLayout
+          v-show="showSett"
+          class="sett"
+        >
+          <Label :text="'Rows: ' + width" class="label"/>
+          <Slider v-model="width" minValue="6" maxValue="10"/>
+          <Label :text="'Cols: ' + height" class="label"/>
+          <Slider v-model="height" minValue="6" maxValue="10"/>
+          <Label :text="'Mines: ' + mineCount" class="label"/>
+          <Slider v-model="mineCount" minValue="6" maxValue="30"/>
+        </StackLayout>
 
-        <Button
-          width="240"
-          @tap="fill()"
-          text="Start game"
-        />
-        <!-- <Button
-          width="240"
-          @tap="showSett = !showSett"
-          text="Settings"
-        />
-        <template v-if="showSett">
-          <StackLayout marginBottom="15">
-            <TextField class="input-field" v-model="height" hint="Number of cols" keyboardType="number" />
-          </StackLayout>
-          <StackLayout marginBottom="15">
-            <TextField class="input-field" v-model="width" hint="Number of rows" keyboardType="number" />
-          </StackLayout>
-        </template> -->
       </StackLayout>
     </ScrollView>
   </Page>
@@ -71,9 +70,9 @@
   export default {
     data() {
       return {
-        width: 6,
-        height: 6,
-        mineCount: 5,
+        width: 9,
+        height: 9,
+        mineCount: 9,
         cells: [],
 
         lockCount: 0,
@@ -93,18 +92,6 @@
         this.openCount = 0;
         this.lockCount = 0;
         this.stage = '';
-
-        // if inputs vals !good then set normal
-        if( this.width < 6 || !parseInt(this.width) ) this.width = 6;
-        if( this.height < 6 || !parseInt(this.height) ) this.height = 6;
-        if( this.width > 15 ) this.width = 15;
-        if( this.height > 15 ) this.height = 15;
-
-        if( this.mineCount >= (this.width * this.height) )
-          this.mineCount = parseInt(this.width * this.height) - 2;
-        if( this.mineCount < 6 || !parseInt(this.mineCount) )
-          this.mineCount = 6;
-
         for (let i = 0; i < this.width; i++) {
           let temp = [];
           for (let j = 0; j < this.height; j++) {
@@ -191,14 +178,33 @@
 </script>
 
 <style scoped>
+    /*Page {
+      background-color: #C4C4C4;
+    }*/
     ActionBar {
       background-color: #53ba82;
-      color: #ffffff;
+      color: white;
     }
-    .flex-nowrap {
-      flex-wrap: nowrap;
+    ActionItem {
+      color: white;
+      background-color: white;
     }
+    Slider {
+      background-color: #53ba82;
+      color: #53ba82;
+    }
+    .sett {
+      padding: 10 0;
+    }
+    .label {
+      font-size: 20;
+      color: black;
+      margin: 10;
+    }
+
     .cell {
+      width: 40;
+      height: 40;
       background-color: #5d5d5d;
       padding: 0;
       margin: 0;
@@ -215,6 +221,7 @@
     .lock {
       background-color: #FF9727;
     }
+
     .alert {
       font-size: 32;
       text-align: center;
