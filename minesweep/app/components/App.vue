@@ -1,16 +1,30 @@
 <template>
   <Page>
     <ActionBar title="Minesweeper">
-      <ActionItem
-        @tap="fill"
-        ios.systemIcon="13" ios.position="left"
-        android.systemIcon="ic_menu_refresh" android.position="actionBar"
-      />
-      <ActionItem
-        @tap="showSett = !showSett"
-        ios.systemIcon="7" ios.position="right"
-        text="settings" android.position="popup"
-      />
+      <StackLayout
+        orientation="horizontal"
+        class="navbar"
+      >
+        <FlexboxLayout
+          width="100%"
+          justifyContent="space-between"
+          alignItems="center"
+        >
+          <Label text="Minesweeper" class="fz-24" />
+          <StackLayout orientation="horizontal">
+            <Label
+              class="fa fz-24" 
+              :text="'fa-refresh' | fonticon"
+              @tap="fill"
+            />
+            <Label
+              class="fa fz-24" 
+              :text="'fa-cog' | fonticon"
+              @tap="showSett = !showSett"
+            />
+          </StackLayout>
+        </FlexboxLayout>
+      </StackLayout>
     </ActionBar>
 
     
@@ -27,14 +41,19 @@
         >
           <FlexboxLayout
             v-for="(row, i) in cells"
-            horizontalAlignment="center"
+            width="100%"
+            justifyContent="center"
           >
             <Button
               v-for="(cell, j) in row"
               :keys="i+j"
               :text=" cell.isOpen ? (cell.mineAround == 0 ? '' : cell.mineAround) : '' "
               class="cell"
-              :class="{ open: cell.isOpen, lock: cell.isLock, mine: cell.isMine && stage }"
+              :class="{
+                open: cell.isOpen,
+                lock: cell.isLock,
+                mine: cell.isMine && stage
+              }"
               @tap="open(i, j)"
               @longPress="lock(i, j)"
             />
@@ -42,15 +61,15 @@
         </StackLayout>
 
         <StackLayout
-          v-show="showSett"
+          v-if="showSett"
           class="sett"
         >
           <Label :text="'Rows: ' + width" class="label"/>
-          <Slider v-model="width" minValue="6" maxValue="10"/>
+          <Slider v-model="width" minValue="6" maxValue="10" @valueChange="fill"/>
           <Label :text="'Cols: ' + height" class="label"/>
-          <Slider v-model="height" minValue="6" maxValue="10"/>
+          <Slider v-model="height" minValue="6" maxValue="10" @valueChange="fill"/>
           <Label :text="'Mines: ' + mineCount" class="label"/>
-          <Slider v-model="mineCount" minValue="6" maxValue="30"/>
+          <Slider v-model="mineCount" minValue="6" maxValue="30" @valueChange="fill"/>
         </StackLayout>
 
       </StackLayout>
@@ -92,6 +111,7 @@
         this.openCount = 0;
         this.lockCount = 0;
         this.stage = '';
+        
         for (let i = 0; i < this.width; i++) {
           let temp = [];
           for (let j = 0; j < this.height; j++) {
@@ -178,20 +198,19 @@
 </script>
 
 <style scoped>
-    /*Page {
-      background-color: #C4C4C4;
-    }*/
     ActionBar {
       background-color: #53ba82;
       color: white;
     }
-    ActionItem {
-      color: white;
-      background-color: white;
-    }
     Slider {
       background-color: #53ba82;
       color: #53ba82;
+    }
+    .navbar .fa {
+      padding: 0 15;
+    }
+    .fz-24 {
+      font-size: 24;
     }
     .sett {
       padding: 10 0;

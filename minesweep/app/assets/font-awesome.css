@@ -1,0 +1,8 @@
+
+.fa-refresh:before {
+  content: "\f021";
+}
+.fa-gear:before,
+.fa-cog:before {
+  content: "\f013";
+}
