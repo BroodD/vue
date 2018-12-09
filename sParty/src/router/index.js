@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import AuthGuard from './auth-guard'
+
 import Home from '@/components/Home'
 import Login from '@/components/Auth/Login'
 import Registration from '@/components/Auth/Registration'
@@ -46,7 +47,7 @@ export default new Router({
 			path: '/user/:id',
 			props: true,
 			name: 'user',
-			component: User
+			component: User,
 		},
 		{
 			path: '/settings',

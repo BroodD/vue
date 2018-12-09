@@ -8,6 +8,7 @@ import Vuetify from 'vuetify'
 import * as fb from 'firebase'
 import 'vuetify/dist/vuetify.min.css'
 
+import Card from '@/components/Cards/Card'
 
 Vue.config.devtools = true
 
@@ -18,6 +19,8 @@ Vue.use(Vuetify, {
 	}
 })
 
+Vue.component('Card', Card)
+
 // Vue.config.productionTip = false
 
 /* eslint-disable no-new */
@@ -25,7 +28,7 @@ new Vue({
   el: '#app',
 	router,
 	store,
-  components: { App },
+  components: { App, Card },
 	template: '<App/>',
 	created() {
 		fb.initializeApp({

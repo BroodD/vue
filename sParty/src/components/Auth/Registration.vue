@@ -10,6 +10,14 @@
             <v-form v-model="valid" ref="form" lazy-validation>
               <v-text-field
                 prepend-icon="person"
+                name="login"
+                label="Login"
+                type="text"
+                v-model="login"
+                :rules="[ v => !!v || 'Login is required' ]"
+              ></v-text-field>
+              <v-text-field
+                prepend-icon="person"
                 name="name"
                 label="Name"
                 type="text"
@@ -24,25 +32,6 @@
                 v-model="email"
                 :rules="emailRules"
               ></v-text-field>
-							<v-dialog
-								ref="date"
-								v-model="dateModal"
-								:return-value.sync="date"
-								persistent
-								lazy
-								full-width
-								width="290px"
-							>
-								<v-text-field
-									slot="activator"
-									v-model="date"
-									label="Date birth"
-									prepend-icon="event"
-									readonly
-									:rules="dateRules"
-								></v-text-field>
-								<v-date-picker v-model="date" @input="$refs.date.save(date)"></v-date-picker>
-							</v-dialog>
               <v-text-field
                 prepend-icon="lock"
                 name="password"
@@ -104,10 +93,8 @@
   export default {
     data () {
       return {
+				login: '',
 				name: '',
-				dateModal: '',
-				dateModal: '',
-				date: '',
         email: '',
         password: '',
 				confirmPassword: '',
@@ -143,8 +130,9 @@
           const user = {
             email: this.email,
 						password: this.password,
+						login: this.login,
 						name: this.name,
-						image: this.image
+						image: this.image,
           }
 
           this.$store.dispatch('registerUser', user)

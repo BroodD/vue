@@ -1,7 +1,7 @@
 import * as fb from 'firebase'
 
 class Cards {
-  constructor (title, desc, ownerId, time, date, like, visit, people, img = null, id = null, ownerName, ownerImg) {
+  constructor (title, desc, ownerId, time, date, like, visit, people, ownerName, ownerImg, img = null, id = null) {
     this.title = title
     this.desc = desc
     this.ownerId = ownerId
@@ -10,10 +10,10 @@ class Cards {
 		this.like = like
 		this.visit = visit
 		this.people = people
-		this.img = img
-    this.id = id
     this.ownerName = ownerName
     this.ownerImg = ownerImg
+    this.img = img
+    this.id = id
   }
 }
 
@@ -32,8 +32,6 @@ export default {
 			const card = state.cards.find(c => {
 				return c.id === id
 			})
-      console.log(state.cards)
-      console.log(id)
 			let index = card.like.lastIndexOf(user) 
 			if (index == -1)
 				card.like.push(user)
@@ -51,44 +49,47 @@ export default {
     async createCard ({commit, getters}, payload) {
       commit('clearError')
 			commit('setLoading', true)
-			
-			const images = payload.images
-			let imageSrc = []
 
       try {
-				// title, desc, ownerId, time, date, like, visit, people, img = null, id = null
+        // title, desc, ownerId, time, date, like, visit, people, ownerName, ownerImg, img = null, id = null
         const newCard = new Cards(
-					payload.title,
-					payload.desc,
-					getters.userId,
-					payload.time,
-					payload.date,
-					[ getters.userId ],
-					[ payload.visit ],
-					payload.people,
-					''
-				)
+          payload.title,
+          payload.desc,
+          getters.userId,
+          payload.time,
+          payload.date,
+          [ getters.userId ],
+          [ payload.visit ],
+          payload.people,
+          getters.user.name,
+					getters.user.image,
+        )
 
-				const card = await fb.database().ref('cards').push(newCard)
-
+        let imageSrc = []
+        const images = payload.images
+  			const files = payload.files
+				const key = await fb.database().ref('cards').push().key
+				
 				for (let i = 0; i < images.length; i++) {
 					let imageExt = images[i].name.slice(images[i].name.lastIndexOf('.') + 1)
-
-					let fileData = await fb.storage().ref(`cards/${card.key}_${i}.${imageExt}`).put(images[i])
+				
+					let fileData = await fb.storage().ref(`cards/${key}_${i}.${imageExt}`).put(files[i])
 						.then(snapshot => snapshot.ref.getDownloadURL())
 						.then(url => imageSrc.push(url))
 				}
-
-				// await fb.database().ref('cards').child(card.key).child('img').push(imageSrc)
-				await fb.database().ref('cards').child(card.key).child('img').update(imageSrc)
+				
+				//await fb.database().ref('cards').child(card.key).child('img').push(imageSrc)
+				// await fb.database().ref('cards').child(card.key).child('img').update(imageSrc)
+				newCard.img = imageSrc
+				newCard.id = key
+				await fb.database().ref('cards').push(newCard)
 					
-        commit('createCard', {
-					...newCard,
-					id: card.key,
-					img: imageSrc,
-					ownerName: getters.user.name,
-					ownerImg: getters.user.image
-				})
+
+				// commit('createCard', {
+				// 	...newCard,
+				// 	// img: imageSrc,
+				// 	id: card.key,
+				// })
 				commit('setLoading', false)
       } catch (error) {
         commit('setError', error.message)
@@ -103,35 +104,37 @@ export default {
       const resultCards = []
 
       try {
-        const fbVal = await fb.database().ref('cards').once('value')
-				const cards = fbVal.val()
+				var _cards = await fb.database().ref().child('cards').orderByKey()
+				var _users = await fb.database().ref().child('users')
 
-        const fbValUser = await fb.database().ref('users').once('value')
-				const users = fbValUser.val()
+				// _cards.on('value', snap => {
+				// 	console.log(snap.val())
+				// })
 				
-        Object.keys(cards).forEach(key => {
-					const card = cards[key]
-					const user = users[card.ownerId]
-          resultCards.push(
-						new Cards(
-							card.title,
-							card.desc,
-							card.ownerId,
-							card.time,
-							card.date,
-							card.like,
-							card.visit,
-							card.people,
-							card.img,
-							key,
-							user.name,
-							user.image
+				_cards.on('child_added', snap => {
+					// console.log('----', snap.val())
+					_users.child(snap.val().ownerId).once('value', user => {
+						resultCards.push(
+							new Cards(
+								snap.val().title,
+								snap.val().desc,
+								snap.val().ownerId,
+								snap.val().time,
+								snap.val().date,
+								snap.val().like,
+								snap.val().visit,
+								snap.val().people,
+								user.val().name,
+								user.val().image,
+								snap.val().img,
+								snap.key
+							)
 						)
-					)
+					})
 				})
 				
         commit('loadCards', resultCards)
-        commit('setLoading', false)
+				commit('setLoading', false)
       } catch (error) {
         commit('setError', error.message)
 				commit('setLoading', false)

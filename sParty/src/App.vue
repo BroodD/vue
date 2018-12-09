@@ -59,7 +59,6 @@
 			app
 			dark
 			color="primary"
-			
 		>
       <v-toolbar-side-icon
         @click="drawer = !drawer"
@@ -137,9 +136,10 @@
 			</v-toolbar-items>
     </v-toolbar>
 
+		
     <v-content>
 			<transition :name="transitionName">
-				<router-view></router-view>
+				<router-view ></router-view>
 			</transition>
     </v-content>
 
@@ -185,7 +185,7 @@ export default {
 			if (this.isUserLoggedIn) {
 				return [
 					{
-						text: 'Add new',
+						text: 'Add card',
 						url: '/new',
 						icon: 'add_circle'
 					},
@@ -217,65 +217,15 @@ export default {
 			this.$router.push('/')
     }
 	},
-	watch: {
-		'$route' (to, from) {
-			const toDepth = to.path.split('/').length
-			const fromDepth = from.path.split('/').length
-			this.transitionName = toDepth < fromDepth || to.path.length < from.path.length ? 'slide-right' : 'slide-left'
-		}
-	}
+	// watch: {
+	// 	'$route' (to, from) {
+	// 		const toDepth = to.path.split('/').length
+	// 		const fromDepth = from.path.split('/').length
+	// 		this.transitionName = toDepth < fromDepth || to.path.length < from.path.length ? 'slide-right' : 'slide-left'
+	// 	}
+	// }
 }
 </script>
 
-<style>
-	/* .animation-enter-active,
-	.animation-leave-active {
-		transition: .3s;
-	}
-	.animation-enter {
-		opacity: 1;
-		transform: translateX(100%);
-	}
-	.animation-leave-to {
-		opacity: 0;
-		transform: translateX(-100%);
-	} */
-
-	.slide-left-enter { transform: translateX(100%) }
-	.slide-left-enter-to { transform: translateX(0) }
-	.slide-left-enter-active { position: absolute }
-
-	.slide-left-leave { transform: translateX(0) }
-	.slide-left-leave-to { transform: translateX(-100%) }
-	.slide-left-leave-active { position: absolute; }
-
-	.slide-left-enter-active,
-	.slide-left-leave-active,
-	.slide-right-enter-active,
-	.slide-right-leave-active { transition: all 500ms ease-in-out }
-
-	.slide-right-enter { transform: translateX(-100%) }
-	.slide-right-enter-to { transform: translateX(0) }
-	.slide-right-enter-active { position: absolute }
-
-	.slide-right-leave { transform: translateX(0) }
-	.slide-right-leave-to { transform: translateX(100%) }
-	.slide-right-leave-active { position: absolute; }
-
-
-	
-	img {
-		max-width: 100%;
-		height: auto;
-	}
-	a {
-		text-decoration: none;
-	}
-	.v-content__wrap {
-		background-color: #e1e1e1;
-	}
-	.pointer {
-		cursor: pointer;
-		text-decoration: none;
-	}
+<style src="./assets/style.css">
 </style>

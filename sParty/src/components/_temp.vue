@@ -1,3 +1,32 @@
+date picker
+
+									<v-dialog 
+										ref="dialog" 
+										v-model="dateModal" 
+										:return-value.sync="date" 
+										persistent 
+										lazy full-width width="290px"
+									>
+										<v-text-field
+											box 
+											slot="activator" 
+											label="Date birth" 
+											readonly
+											v-model="date"
+										/>
+										<v-date-picker
+											:value="user.born"
+											v-model="date" 
+											@input="$refs.dialog.save(date)"
+										></v-date-picker>
+									</v-dialog>
+									<v-date-picker
+										:value="user.born"
+										@input="date = $event"
+									></v-date-picker>
+
+
+
 // https://firebase.google.com/docs/database/web/read-and-write
 
 

@@ -168,6 +168,7 @@
   export default {
     data () {
       return {
+        files: [],
         title: '',
 				desc: '',
 				people: '',
@@ -203,7 +204,8 @@
 						date: this.date,
 						visit: this.$store.getters.userId,
 						people: this.people,
-						images: this.images
+						images: this.images,
+            files: this.files
           }
 
           this.$store.dispatch('createCard', card)
@@ -232,6 +234,8 @@
 
 					read.readAsDataURL(files[i])
 				}
+
+        this.files = files;
 			},
 			deleteImage (i) {
 				this.images.splice(i, 1)
@@ -239,13 +243,19 @@
 			swap (i, way) {
 				let len = this.images.length
 				if ( (i == 0 && way == 0) || (i == len - 1 && way == 2)) {
-					let temp = this.images[len - 1].src
-					this.$set(this.images[len - 1], 'src', this.images[0].src)
-					this.$set(this.images[0], 'src', temp)
+          let temp = this.images[len - 1].src
+          this.$set(this.images[len - 1], 'src', this.images[0].src)
+          this.$set(this.images[0], 'src', temp)
+					temp = this.images[len - 1].name
+					this.$set(this.images[len - 1], 'name', this.images[0].name)
+					this.$set(this.images[0], 'name', temp)
 				} else {
 					let temp = this.images[i].src
 					this.$set(this.images[i], 'src', this.images[i - 1 + way].src)
 					this.$set(this.images[i - 1 + way], 'src', temp)
+          temp = this.images[i].name
+          this.$set(this.images[i], 'name', this.images[i - 1 + way].name)
+          this.$set(this.images[i - 1 + way], 'name', temp)
 				}
 			}
     }
