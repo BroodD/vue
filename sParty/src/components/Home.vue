@@ -22,8 +22,8 @@ export default {
 		}
 	},
 	methods: {
-		toggLike (id) {
-			this.$store.dispatch('toggleLike', id)
+		toggLike (id, length) {
+			this.$store.dispatch('toggleLike', id, length)
 		}
 	}
 }

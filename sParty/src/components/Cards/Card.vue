@@ -7,7 +7,7 @@
 						avatar
 					>
 						<v-avatar class="mr-3">
-							<v-img :src="card.ownerImg"></v-img>
+							<v-img position="top left" :src="card.ownerImg"></v-img>
 						</v-avatar>
 
 						<v-list-tile-content>
@@ -92,8 +92,8 @@
 				</v-btn>
 				<v-btn 
 					flat
-					:color="card.like !== undefined && card.like.lastIndexOf(userId) !== -1 ? 'red' : ''"
-					@click="$emit('toggle-like', card.id)"
+					:color="card.like !== undefined && card.like[userId] ? 'red' : ''"
+					@click="$emit('toggle-like', card.id, card.like.length)"
 				>
 					<span v-if="card.like !== undefined">{{ card.like.length }}</span>
 					<v-icon right>favorite</v-icon>

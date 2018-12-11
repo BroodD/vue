@@ -38,6 +38,17 @@
 								:rules="peopleRules"
 								placeholder="14"
 							></v-text-field>
+							
+							<!-- <v-layout>
+								<v-flex sm6>
+									<v-date-picker v-model="date"></v-date-picker>
+								</v-flex>
+								<v-flex sm6>
+									<v-time-picker
+										v-model="time"
+									/>
+								</v-flex>
+							</v-layout> -->
 
 							<v-dialog
 								ref="date"

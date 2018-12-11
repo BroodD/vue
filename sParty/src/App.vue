@@ -110,7 +110,7 @@
 					>
 						<span class="mr-3">{{ user.name }}</span>
 						<v-avatar>
-							<v-img :src="user.image"></v-img>
+							<v-img position="top left" :src="user.image"></v-img>
 						</v-avatar>
 					</v-btn>
 

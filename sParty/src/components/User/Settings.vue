@@ -19,7 +19,7 @@
 								<v-form v-model="valid" ref="form" lazy-validation>
 									<v-layout row wrap>
 										<v-flex md4>
-											<img :src="imageSrc || user.image" @click="triggerUpload">
+											<img :src="imageSrc || user.image" @click="triggerUpload"></img>
 											<input
 												ref="fileInput"
 												type="file"
@@ -64,22 +64,6 @@
 										label="Gender"
 										v-model="gender"
 									></v-select> -->
-									<!-- <v-text-field
-										box 
-										label="Password" 
-										type="password" 
-										:counter="6" 
-										v-model="password"
-										:rules="passwordRules"
-									/>
-									<v-text-field
-										box 
-										label="Confirm Password" 
-										type="password" 
-										:counter="6"
-										v-model="confirmPassword" 
-										:rules="confirmPasswordRules"
-									/> -->
 								</v-form>
 							</v-card-text>
 							<v-card-actions>
@@ -90,6 +74,28 @@
 									:disabled="!valid || loading"
 								>Update</v-btn>
 							</v-card-actions>
+						</v-card>
+					</v-tab-item>
+					<v-tab-item>
+						<v-card>
+							<v-card-text>
+								<v-text-field
+									box 
+									label="Password" 
+									type="password" 
+									:counter="6" 
+									v-model="password"
+									:rules="passwordRules"
+								/>
+								<v-text-field
+									box 
+									label="Confirm Password" 
+									type="password" 
+									:counter="6"
+									v-model="confirmPassword" 
+									:rules="confirmPasswordRules"
+								/>
+							</v-card-text>
 						</v-card>
 					</v-tab-item>
 				</v-tabs>
@@ -150,10 +156,11 @@ export default {
 					bio: this.bio || this.user.bio,
 				}
 
-				console.log('submit')
-				console.log(typeof user.image)
-
 				this.$store.dispatch('changeUserInfo', user)
+          .then(() => {
+            this.$router.push('/user/' + this.$store.getters.user.id)
+          })
+          .catch(() => {})
 			}
 		},
 		triggerUpload () {

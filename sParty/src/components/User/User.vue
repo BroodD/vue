@@ -5,7 +5,7 @@
 				<v-avatar
 					size="200"
 				>
-					<v-img :src="user.image" alt="avatar" />
+					<v-img position="top left" :src="user.image" alt="avatar" />
 				</v-avatar>
 			</v-flex>
 			<v-flex sm>

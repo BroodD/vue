@@ -1,7 +1,8 @@
+import Vue from 'vue'
 import * as fb from 'firebase'
 
 class Cards {
-  constructor (title, desc, ownerId, time, date, like, visit, people, ownerName, ownerImg, img = null, id = null) {
+  constructor (title, desc, ownerId, time, date, like, visit, people, ownerName = null, ownerImg = null, img = null, id = null) {
     this.title = title
     this.desc = desc
     this.ownerId = ownerId
@@ -23,7 +24,7 @@ export default {
   },
   mutations: {
     createCard (state, payload) {
-      state.cards.push(payload)
+      state.cards.unshift(payload)
     },
     loadCards (state, payload) {
       state.cards = payload
@@ -32,11 +33,12 @@ export default {
 			const card = state.cards.find(c => {
 				return c.id === id
 			})
-			let index = card.like.lastIndexOf(user) 
-			if (index == -1)
-				card.like.push(user)
+			if (card.like[user])
+				Vue.delete(card.like, user),
+				Vue.set(card.like, 'length', card.like.length - 1)
 			else 
-				card.like.splice(index, 1)
+				Vue.set(card.like, user, id),
+				Vue.set(card.like, 'length', card.like.length + 1)
 		},
 		// addComment (state, {id, user, text}) {
 		// 	const card = state.cards.find(c => {
@@ -61,8 +63,6 @@ export default {
           [ getters.userId ],
           [ payload.visit ],
           payload.people,
-          getters.user.name,
-					getters.user.image,
         )
 
         let imageSrc = []
@@ -83,13 +83,11 @@ export default {
 				newCard.img = imageSrc
 				newCard.id = key
 				await fb.database().ref('cards').push(newCard)
-					
+				
+        newCard.ownerName = getters.user.name
+        newCard.ownerImg = getters.user.image
 
-				// commit('createCard', {
-				// 	...newCard,
-				// 	// img: imageSrc,
-				// 	id: card.key,
-				// })
+				commit('createCard', newCard)
 				commit('setLoading', false)
       } catch (error) {
         commit('setError', error.message)
@@ -104,32 +102,33 @@ export default {
       const resultCards = []
 
       try {
-				var _cards = await fb.database().ref().child('cards').orderByKey()
-				var _users = await fb.database().ref().child('users')
-
+				var _cards = await fb.database().ref('cards').orderByKey()
+				var _users = await fb.database().ref('users')
 				// _cards.on('value', snap => {
 				// 	console.log(snap.val())
 				// })
 				
-				_cards.on('child_added', snap => {
+				_cards.once('value', snap => {
 					// console.log('----', snap.val())
-					_users.child(snap.val().ownerId).once('value', user => {
-						resultCards.push(
-							new Cards(
-								snap.val().title,
-								snap.val().desc,
-								snap.val().ownerId,
-								snap.val().time,
-								snap.val().date,
-								snap.val().like,
-								snap.val().visit,
-								snap.val().people,
-								user.val().name,
-								user.val().image,
-								snap.val().img,
-								snap.key
+          snap.forEach(e => {
+  					_users.child(e.val().ownerId).once('value', user => {
+  						resultCards.push(
+  							new Cards(
+  								e.val().title,
+  								e.val().desc,
+  								e.val().ownerId,
+  								e.val().time,
+  								e.val().date,
+  								e.val().like,
+  								e.val().visit,
+  								e.val().people,
+  								user.val().name,
+  								user.val().image,
+  								e.val().img,
+  								e.key
+  							)
 							)
-						)
+            })
 					})
 				})
 				
@@ -141,18 +140,30 @@ export default {
         throw error
       }
 		},
-		async toggleLike ({commit, getters}, id) {
+		async toggleLike ({commit, getters}, id, length) {
 			commit('clearError')
 			commit('setLoading', true)
 			
 			const user = getters.userId
+			console.log(length)
 
 			if( user ) {
-				// try
-				// async code database...
-				// await fb.database().ref('cards/' + id + '/like').update({
-				// 	'10': '9012'
-				// })
+				var fbVal = await fb.database().ref('cards/' + id + '/like/').child(user).once('value')
+				var k = fbVal.val() == null ? null : Object.keys(fbVal.val())[0];
+
+				console.log(k, fbVal.val())
+
+				if(k == null)
+					// await fb.database().ref('cards/' + id + '/like/').child(user).remove(),
+					await fb.database().ref('cards/' + id + '/like/').update({
+						[user]: null,
+						// length: length - 1
+					})
+				else
+					await fb.database().ref('cards/' + id + '/like/').update({
+						[user]: 1,
+						// length: length + 1
+					})
 				commit('toggleLike', {user, id})
 				commit('setLoading', false)
 			} else {

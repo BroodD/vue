@@ -78,9 +78,6 @@ export default {
 
 			var uid = getters.userId
 
-			console.log('get')
-			console.log(image)
-
 			var imageSrc
 			if(typeof image == 'object') {
 				console.log('here')
@@ -95,9 +92,7 @@ export default {
 			// some show id user where user.login == login
 			var fbVal = await fb.database().ref("users").orderByChild("login").equalTo(login).once("value");
 			var l = fbVal.val();
-			var k = l === null ? null : Object.keys(l)[0];
-
-			console.log(l, k)
+			var k = l == null ? null : Object.keys(l)[0];
 
 			// if userId != user.id where login is this.login
 			if ( (k != uid) && k ) {
