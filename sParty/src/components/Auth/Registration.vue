@@ -15,6 +15,8 @@
                 type="text"
                 v-model="login"
                 :rules="[ v => !!v || 'Login is required' ]"
+								validate-on-blur
+								autofocus
               ></v-text-field>
               <v-text-field
                 prepend-icon="person"
@@ -23,6 +25,7 @@
                 type="text"
                 v-model="name"
                 :rules="[ v => !!v || 'Name is required' ]"
+								validate-on-blur
               ></v-text-field>
               <v-text-field
                 prepend-icon="alternate_email"
@@ -31,6 +34,7 @@
                 type="email"
                 v-model="email"
                 :rules="emailRules"
+								validate-on-blur
               ></v-text-field>
               <v-text-field
                 prepend-icon="lock"
@@ -40,6 +44,7 @@
                 :counter="6"
                 v-model="password"
                 :rules="passwordRules"
+								validate-on-blur
               ></v-text-field>
               <v-text-field
                 prepend-icon="lock"
@@ -49,6 +54,7 @@
                 :counter="6"
                 v-model="confirmPassword"
                 :rules="confirmPasswordRules"
+								validate-on-blur
               ></v-text-field>
 							<v-layout row wrap>
 								<v-flex md4>

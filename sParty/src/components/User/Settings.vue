@@ -118,8 +118,8 @@ export default {
 			bio: '',
 			email: '',
 			// gender: '',
-			// password: '',
-			// confirmPassword: '',
+			password: '',
+			confirmPassword: '',
 			valid: false,
 			nameRules: [
 				v => !!v || 'Name is required',
@@ -128,14 +128,14 @@ export default {
 				v => !!v || 'E-mail is required',
 				v => emailRegex.test(v) || 'E-mail must be valid'
 			],
-			// passwordRules: [
-			// 	v => !!v || 'Password is required',
-			// 	v => (v && v.length >= 6) || 'Password must be equal or more than 6 characters'
-			// ],
-			// confirmPasswordRules: [
-			// 	v => !!v || 'Password is required',
-			// 	v => v === this.password || 'Password should match'
-			// ]
+			passwordRules: [
+				v => !!v || 'Password is required',
+				v => (v && v.length >= 6) || 'Password must be equal or more than 6 characters'
+			],
+			confirmPasswordRules: [
+				v => !!v || 'Password is required',
+				v => v === this.password || 'Password should match'
+			]
 		}
 	},
 	computed: {

@@ -16,6 +16,7 @@
                 v-model="email"
                 :rules="emailRules"
 								validate-on-blur
+								autofocus
               ></v-text-field>
               <v-text-field
                 prepend-icon="lock"

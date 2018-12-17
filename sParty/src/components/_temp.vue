@@ -1,3 +1,183 @@
+single
+
+<template>
+	<v-container grid-list-md v-if="card">
+		<v-layout row wrap>
+			<v-flex xs12>
+				<v-card class="elevation-10">
+					<v-list>
+						<router-link :to="'/user/' + card.ownerId">
+							<v-list-tile
+								avatar
+							>
+								<v-avatar class="mr-3">
+									<v-img position="top left" :src="card.ownerImg"></v-img>
+								</v-avatar>
+
+								<v-list-tile-content>
+									<v-list-tile-title>{{ card.ownerName }}</v-list-tile-title>
+									<!-- <v-list-tile-sub-title>06:40 20 April 2018 id: {{ card.id }}</v-list-tile-sub-title> -->
+								</v-list-tile-content>
+							</v-list-tile>
+						</router-link>
+					</v-list>
+					<v-divider></v-divider>
+					<v-layout row wrap>
+						<v-flex md6>
+							<v-card-title class="align-start">
+								<div>
+									<div class="headline">{{ card.title }}</div>
+									<div class="grey--text">
+										<span>Video game</span>
+										<span>|</span>
+										<span>only PRO</span>
+									</div>
+									<div class="grey--text">
+										<span>Івано-Франкіськ</span>
+										<span>|</span>
+										<span>Калуш</span>
+										<span>|</span>
+										<span>Галич</span>
+									</div>
+								</div>
+							</v-card-title>
+							<div class="pa-3 pt-0 caption">
+								{{ card.desc }}
+							</div>
+
+							<v-card-actions>
+								<!-- <v-btn flat>
+									<span>10023</span>
+									<v-icon right>remove_red_eye</v-icon>
+								</v-btn> -->
+								<v-btn
+									flat
+									:color="card.visit < card.people ? 'red' : 'primary'"
+									@click="toggVisit({ id: card.id, length: card.visit })"
+								>
+									<span>{{ card.visit }} / {{ card.people }}</span>
+									<v-icon right>people</v-icon>
+								</v-btn>
+								<v-btn flat>
+									<span>{{ card.commLength }}</span>
+									<v-icon right>mode_comment</v-icon>
+								</v-btn>
+								<v-btn 
+									flat
+									:color="card.like !== undefined && card.like.red ? 'red' : ''"
+									@click="toggLike({id: card.id, length: card.like.length })"
+								>
+									<span v-if="card.like !== undefined">{{ card.like.length }}</span>
+									<v-icon right>favorite</v-icon>
+								</v-btn>
+							</v-card-actions>
+						</v-flex>
+
+						<v-flex xs12 md6>
+							<v-layout>
+								<v-flex xs12>
+									<v-img
+										v-if="card.img.length == 1"
+										:src="card.img[0]"
+										max-height="400px"
+										position="top"
+									>
+									</v-img>
+
+									<v-layout
+										v-else-if="card.img.length > 1"
+									>
+										<v-flex xs12 d-flex>
+											<v-layout>
+												<v-flex xs12>
+													<v-carousel>
+														<v-carousel-item
+															v-for="(img, i) in card.img"
+															:key="i"
+															:src="img"
+															position="top"
+														></v-carousel-item>
+													</v-carousel>
+												</v-flex>
+											</v-layout>
+										</v-flex>
+									</v-layout>
+								</v-flex>
+							</v-layout>
+						</v-flex>
+
+						<v-flex md6>
+							<v-list>
+								<template v-for="c in comments">
+									<!-- <v-divider 	:key="c.id"></v-divider> -->
+									<v-list-tile
+										:key="c.id"
+										avatar
+									>
+										<v-list-tile-avatar>
+											<!-- <img :src="c.img"> -->
+											<v-img position="top left" :src="c.img" alt="avatar" size="100" />
+										</v-list-tile-avatar>
+
+										<v-list-tile-content>
+											<v-list-tile-title v-html="c.name"></v-list-tile-title>
+											<v-list-tile-sub-title v-html="c.text"></v-list-tile-sub-title>
+										</v-list-tile-content>
+									</v-list-tile>
+								</template>
+							</v-list>
+							<v-textarea
+								box
+								label="Your comment"
+								v-model="text"
+							></v-textarea>
+							<v-btn color="primary" @click="addComment">Send</v-btn>
+						</v-flex>
+					</v-layout>
+				</v-card>
+			</v-flex>
+		</v-layout>
+	</v-container>
+</template>
+
+<script>
+export default {
+	props: ['id'],
+	data () {
+		return {
+			text: '',
+		}
+	},
+	computed: {
+		card () {
+			return this.$store.getters.cardById(this.id)
+		},
+		comments () {
+			return this.$store.getters.otherCard.comments
+		},
+		userId () {
+			return this.$store.getters.userId
+		}
+	},
+	methods: {
+		toggLike ({id, length}) {
+			this.$store.dispatch('toggleLike', {id, length})
+		},
+		toggVisit ({id, length}) {
+			this.$store.dispatch('toggleVisit', {id, length})
+		},
+		addComment () {
+			this.$store.dispatch('addComment', {id: this.id, text: this.text, length: this.card.commLength})
+			this.text = ''
+		}
+	},
+	created() {
+		this.$store.dispatch('fetchComments', { id: this.id })
+	}
+}
+</script>
+
+
 date picker
 
 									<v-dialog 

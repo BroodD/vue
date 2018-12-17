@@ -27,12 +27,14 @@
 		</v-layout>
 		
 		<v-layout row wrap>
-			<Card
-				:card="card"
+			<v-flex xs12 md6
 				v-for="card in userCards"
 				:key="card.id"
-				@toggle-like="toggLike"
-			/>
+			>
+				<Card
+					:card="card"
+				/>
+			</v-flex>
 		</v-layout>
   </v-container>
 </template>
@@ -49,11 +51,6 @@ export default {
 			if( this.id != this.$store.getters.userId)
 				return this.$store.getters.otherUser
 			return this.$store.getters.user
-		}
-	},
-	methods: {
-		toggLike (id) {
-			this.$store.dispatch('toggleLike', id)
 		}
 	},
 	created () {
