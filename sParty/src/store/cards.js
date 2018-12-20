@@ -24,7 +24,7 @@ export default {
 		cards: [],
 		otherCard: {
 			comments: [],
-			commLength: 0
+			// commLength: 0
 		}
   },
   mutations: {
@@ -107,8 +107,7 @@ export default {
 				// newCard.id = key
 				await fb.database().ref('cards').push(newCard)
 
-
-				newCard.comments = 0
+				newCard.comments = null
         newCard.ownerName = getters.user.name
         newCard.ownerImg = getters.user.image
 
@@ -134,14 +133,14 @@ export default {
 						.database()
 						.ref("cards")
 						.orderByKey()
-						.limitToLast(3)
-						.endAt(endAt)
+						// .limitToLast(3)
+						// .endAt(endAt)
 				} else {
 					_cards = await fb
 						.database()
 						.ref("cards")
 						.orderByKey()
-						.limitToLast(3)
+						// .limitToLast(3)
 				}
 
 				// var _cards = await fb.database().ref('cards').orderByKey().limitToLast(4).endAt('-LTmPiKMZA7XRXUfCj_f')
@@ -216,19 +215,26 @@ export default {
 			var stage = false
 
 			if( user ) {
-				await fb.database().ref('cards/' + id + '/visit/').child(user).once('value')
+				var base = await fb.database();
+				base.ref('cards/' + id + '/visit/').child(user).once('value')
 					.then(s => {
 						if(s.val())
 							// fb.database().ref('cards/' + id + '/like/').child(user).remove(),
-							fb.database().ref('cards/' + id + '/visit/').update({
+							base.ref('cards/' + id + '/visit/').update({
 								[user]: null,
 								length: length - 1
 							}),
-							stage = true
+							stage = true,
+							base.ref('users/' + user + '/visit').update({
+								[id]: null
+							})
 						else
-							fb.database().ref('cards/' + id + '/visit/').update({
+							base.ref('cards/' + id + '/visit/').update({
 								[user]: 1,
 								length: length + 1,
+							}),
+							base.ref('users/' + user + '/visit').update({
+								[id]: 1
 							})
 					})
 				commit('toggleVisit', { id, stage })

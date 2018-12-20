@@ -126,6 +126,11 @@
 							<v-list-tile-title>Settings</v-list-tile-title>
 						</v-list-tile>
 						<v-list-tile
+							to="/visit"
+						>
+							<v-list-tile-title>Visit</v-list-tile-title>
+						</v-list-tile>
+						<v-list-tile
 							@click="onLogout"
 						>
 							<v-list-tile-title>Logout</v-list-tile-title>

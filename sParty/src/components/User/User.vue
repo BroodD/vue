@@ -34,6 +34,14 @@
 				<Card
 					:card="card"
 				/>
+				<!-- <v-btn
+					fab
+					dark
+					small
+					color="red"
+				>
+					<v-icon>delete</v-icon>
+				</v-btn> -->
 			</v-flex>
 		</v-layout>
   </v-container>

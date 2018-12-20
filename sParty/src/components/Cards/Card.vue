@@ -1,7 +1,7 @@
 <template>
 	<v-card class="mb-2 elevation-10">
 		<v-list>
-			<router-link :to="'user/' + card.ownerId">
+			<router-link :to="'/user/' + card.ownerId">
 				<v-list-tile
 					avatar
 				>
@@ -115,6 +115,7 @@
 			},
 			toggVisit ({id, length}) {
 				this.$store.dispatch('toggleVisit', {id, length})
+				this.$store.dispatch('setError', {msg:"Okey toggle visit", color:"primary"})
 			},
       loadCard (id) {
         this.$router.push('/card/' + id + '#comments')
