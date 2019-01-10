@@ -213,7 +213,6 @@
 						desc: this.desc,
 						time: this.time,
 						date: this.date,
-						visit: this.$store.getters.userId,
 						people: this.people,
 						images: this.images,
             files: this.files

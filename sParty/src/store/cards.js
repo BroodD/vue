@@ -1,31 +1,10 @@
 // import Vue from 'vue'
 import * as fb from 'firebase'
-
-class Cards {
-	constructor(title, desc, ownerId, time, date, like, visit, people, commLength = null, ownerName = null, ownerImg = null, img = null, id = null) {
-		this.title = title
-		this.desc = desc
-		this.ownerId = ownerId
-		this.time = time
-		this.date = date
-		this.like = like
-		this.visit = visit
-		this.people = people
-		this.commLength = commLength
-		this.ownerName = ownerName
-		this.ownerImg = ownerImg
-		this.img = img
-		this.id = id
-	}
-}
+import { Cards } from '@/class/Mixin'
 
 export default {
   state: {
 		cards: [],
-		otherCard: {
-			comments: [],
-			// commLength: 0
-		}
   },
   mutations: {
     createCard (state, payload) {
@@ -34,28 +13,27 @@ export default {
     loadCards (state, payload) {
 			state.cards = payload
 		},
-		toggleLike (state, id) {
+		toggleLike (state, { id, red }) {
 			const card = state.cards.find(c => {
 				return c.id === id
 			})
-			if (card.like.red)
+			if (red)
 				card.like.red = false,
 				card.like.length--
 			else 
 				card.like.red = true,
 				card.like.length++
 		},
-		toggleVisit (state, { id, stage }) {
+		toggleVisit (state, { id, red }) {
 			const card = state.cards.find(c => {
 				return c.id === id
 			})
-			if (stage)
-				card.visit--
+			if (red)
+				card.visit.length--,
+				card.visit.red = false
 			else
-				card.visit++
-		},
-		loadComments (state, payload) {
-			state.otherCard.comments = payload
+				card.visit.length++,
+				card.visit.red = true
 		},
 		addComment (state, { key, text, user, id }) {
 			const card = state.cards.find(c => {
@@ -67,7 +45,7 @@ export default {
 				...user,
 				text
 			})
-		}
+		},
   },
   actions: {
     async createCard ({commit, getters}, payload) {
@@ -75,7 +53,7 @@ export default {
 			commit('setLoading', true)
 
       try {
-				// title, desc, ownerId, time, date, like, visit, people, commLength, ownerName = null, ownerImg = null, img = null, id = null
+				// title, desc, ownerId, time, date, like, visit, people, comments, ownerName = null, ownerImg = null, img = null, id = null
         const newCard = new Cards(
           payload.title,
           payload.desc,
@@ -83,8 +61,9 @@ export default {
           payload.time,
 					payload.date,
           { length: 0 },
-          { length: 0 },
+					{ length: 0 },
 					payload.people,
+					0,
         )
 
         let imageSrc = []
@@ -100,20 +79,24 @@ export default {
 						.then(url => imageSrc.push(url))
 				}
 				
-				//await fb.database().ref('cards').child(card.key).child('img').push(imageSrc)
-				// await fb.database().ref('cards').child(card.key).child('img').update(imageSrc)
 				newCard.img = imageSrc
-				newCard.comments = { length: 0 }
-				// newCard.id = key
 				await fb.database().ref('cards').push(newCard)
 
-				newCard.comments = null
         newCard.ownerName = getters.user.name
-        newCard.ownerImg = getters.user.image
+				newCard.ownerImg = getters.user.image
+				newCard.visit = {
+					length: 0,
+					red: false
+				}
+				newCard.like = {
+					length: 0,
+					red: false
+				}
 
 				commit('createCard', newCard)
 				commit('setLoading', false)
       } catch (error) {
+				console.log('error')
         commit('setError', error.message)
         commit('setLoading', false)
         throw error
@@ -126,50 +109,56 @@ export default {
       var resultCards = []
 
       try {
+				var base = await fb
+					.database()
+					.ref()
 				var _cards
 
 				if (endAt) {
-					_cards = await fb
-						.database()
-						.ref("cards")
+					_cards = base
+						.child("cards")
 						.orderByKey()
-						// .limitToLast(3)
+						// .limitToLast(5)
 						// .endAt(endAt)
 				} else {
-					_cards = await fb
-						.database()
-						.ref("cards")
+					_cards = base
+						.child("cards")
 						.orderByKey()
-						// .limitToLast(3)
+						// .limitToLast(4)
 				}
 
 				// var _cards = await fb.database().ref('cards').orderByKey().limitToLast(4).endAt('-LTmPiKMZA7XRXUfCj_f')
-				var _users = await fb.database().ref('users')
+				var _users = base.child('users')
 				
 				_cards.once('value', snap => {
-          snap.forEach(e => {
-  					_users.child(e.val().ownerId).once('value', user => {
-							let red = e.val().like[getters.userId] ? true : false;
-  						resultCards.push(
-  							new Cards(
-  								e.val().title,
-  								e.val().desc,
-  								e.val().ownerId,
-  								e.val().time,
-									e.val().date,
-  								{length: e.val().like.length, red},
-  								e.val().visit.length,
-  								e.val().people,
-									e.val().comments.length,
-  								user.val().name,
-  								user.val().image,
-  								e.val().img,
-  								e.key
-  							)
-							)
+					snap.forEach(e => {
+						if (e.key != endAt )
+							_users.child(e.val().ownerId).once('value', user => {
+
+								let red = e.val().like[getters.userId] ? true : false;
+								let visit = e.val().visit[getters.userId] ? true : false;
+								resultCards.push(
+									new Cards(
+										e.val().title,
+										e.val().desc,
+										e.val().ownerId,
+										e.val().time,
+										e.val().date,
+										{ length: e.val().like.length, red},
+										{length: e.val().visit.length, red: visit},
+										e.val().people,
+										e.val().comments,
+										user.val().name,
+										user.val().image,
+										e.val().img,
+										e.key
+									)
+								)
             })
 					})
 				})
+
+				resultCards = resultCards.concat(getters.cards)
 				
         commit('loadCards', resultCards)
 				commit('setLoading', false)
@@ -179,137 +168,187 @@ export default {
         throw error
       }
 		},
-		async toggleLike({ commit, getters }, { id, length }) {
+		async userCards({ commit, getters }, { id, user }) {
 			commit('clearError')
 			commit('setLoading', true)
-			
-			const user = getters.userId
 
-			if( user ) {
-				await fb.database().ref('cards/' + id + '/like/').child(user).once('value')
-					.then(s => {
-						if(s.val())
-							// fb.database().ref('cards/' + id + '/like/').child(user).remove(),
-							fb.database().ref('cards/' + id + '/like/').update({
-								[user]: null,
-								length: length - 1
-							})
-						else
-							fb.database().ref('cards/' + id + '/like/').update({
-								[user]: 1,
-								length: length + 1,
-							})
+			var resultCards = []
+
+			try {
+				var _cards = await fb
+						.database()
+						.ref("cards")
+				var _userCards = await fb.database().ref('users/' + id + '/cards')
+
+				_userCards.once('value', snap => {
+					snap.forEach(e => {
+						_cards.child(e.key).once('value', card => {
+							let red = card.val().like[getters.userId] ? true : false;
+							resultCards.push(
+								new Cards(
+									card.val().title,
+									card.val().desc,
+									card.val().ownerId,
+									card.val().time,
+									card.val().date,
+									{ length: card.val().like.length, red },
+									card.val().visit.length,
+									card.val().people,
+									card.val().comments.length,
+									user.name,
+									user.image,
+									card.val().img,
+									e.key
+								)
+							)
+						})
 					})
-				commit('toggleLike', id)
+				})
+
+				commit('loadCards', resultCards)
 				commit('setLoading', false)
-			} else {
+			} catch (error) {
+				commit('setError', error.message)
 				commit('setLoading', false)
-				commit('setError', 'You must be logined')
+				throw error
 			}
 		},
-		async toggleVisit({ commit, getters }, { id, length }) {
+		// async fetchVisit({ commit, getters }) {
+		// 	commit('clearError')
+		// 	commit('setLoading', true)
+
+		// 	try {
+		// 		var u = getters.user
+		// 		var _cards = await fb.database().ref("cards")
+		// 		var _users = await fb.database().ref("users/" + u.id + "/visit")
+		// 		var resultCards = []
+
+		// 		_users.once("value", user => {
+		// 			user.forEach(e => {
+		// 				if(e.key != 'length')
+		// 				_cards.child(e.key).once("value", card => {
+		// 					var like = card.val().like[u.id]
+		// 					console.log("like " + like)
+		// 					let red = card.val().like[u.id] ? true : false
+		// 					resultCards.push(
+		// 						new Cards(
+		// 							card.val().title,
+		// 							card.val().desc,
+		// 							card.val().ownerId,
+		// 							card.val().time,
+		// 							card.val().date,
+		// 							{ length: card.val().like.length, red },
+		// 							card.val().visit.length,
+		// 							card.val().people,
+		// 							card.val().comments.length,
+		// 							u.name,
+		// 							u.image,
+		// 							card.val().img,
+		// 							card.key
+		// 						)
+		// 					)
+		// 				})
+		// 			})
+		// 		})
+
+		// 		commit('loadCards', resultCards)
+		// 		commit('setLoading', false)
+		// 	} catch(error) {
+		// 		commit('setError', error.message)
+		// 		commit('setLoading', false)
+		// 		throw error
+		// 	}
+		// },
+		async toggleLike({ commit, getters }, { id, length, red }) {
 			commit('clearError')
 			commit('setLoading', true)
 			
 			var user = getters.userId
-			var stage = false
 
 			if( user ) {
-				var base = await fb.database();
-				base.ref('cards/' + id + '/visit/').child(user).once('value')
-					.then(s => {
-						if(s.val())
-							// fb.database().ref('cards/' + id + '/like/').child(user).remove(),
-							base.ref('cards/' + id + '/visit/').update({
-								[user]: null,
-								length: length - 1
-							}),
-							stage = true,
-							base.ref('users/' + user + '/visit').update({
-								[id]: null
-							})
-						else
-							base.ref('cards/' + id + '/visit/').update({
-								[user]: 1,
-								length: length + 1,
-							}),
-							base.ref('users/' + user + '/visit').update({
-								[id]: 1
-							})
+				var base = await fb.database().ref();
+				if (red) {
+					// console.log('remove')
+					base.child('cards/' + id + '/like').update({
+						length: length - 1,
+						[user]: null
 					})
-				commit('toggleVisit', { id, stage })
+				}
+				else {
+					// console.log('add')
+					base.child('cards/' + id + '/like').update({
+						length: length + 1,
+						[user]: 1
+					})
+				}
+
+				commit('toggleLike', { id, red })
 				commit('setLoading', false)
 			} else {
 				commit('setLoading', false)
 				commit('setError', 'You must be logined')
 			}
 		},
-		async fetchComments({ commit }, { id }) {
+		async toggleVisit({ commit, getters }, { id, length, red }) {
 			commit('clearError')
 			commit('setLoading', true)
+			
+			var user = getters.userId
 
-			var comments = []
+			if( user ) {
+				var base = await fb.database().ref();
+				if(red) {
+					// console.log('remove')
+					base.child('cards/' + id + '/visit/').update({
+						length: length - 1,
+						[user]: null
+					})
+					base.child('users/' + user + '/visit/').update({
+						[id]: null
+					})
+					commit('setError', { msg:'Remove from members', color: 'red'})
+				}
+				else {
+					// console.log('add')
+					base.child('cards/' + id + '/visit/').update({
+						length: length + 1,
+						[user]: 1
+					})
+					base.child('users/' + user + '/visit/').update({
+						[id]: 1
+					})
+					commit('setError', { msg:'Add to members', color: 'primary'})
+				}
 
-			var _cards = await fb.database().ref('cards/' + id + '/comments')
-			var _users = await fb.database().ref('users')
-
-			/*
-			cards
-				- LTRULzL5608tctiKkAa
-					comments
-						- LTcwTEQoA80xBeyCTlu          <-- comment
-							7YiH9GYOIlWy1iPok4aa1xW7QhX2: <-- uid   "awd"  <-- [comment][uid]
-						- LTd1LiPJJxPpXOF5DQw
-							7YiH9GYOIlWy1iPok4aa1xW7QhX2: "okey let me go"
-						length: 1
-			*/
-			_cards.once("value", snap => {
-				if (typeof snap.val() == "object" && snap.val())
-					// see up ^
-					Object.keys(snap.val()).map(comment => {
-						Object.keys(snap.val()[comment]).map(uid => {
-							_users.child(uid).once("value", user => {
-								comments.push({
-									id: comment,
-									name: user.val().name,
-									img: user.val().image,
-									text: snap.val()[comment][uid]
-								});
-							});
-						});
-					});
-			});
-
-			commit('loadComments', comments)
-			commit('setLoading', false)
+				commit('toggleVisit', { id, red })
+				commit('setLoading', false)
+			} else {
+				commit('setLoading', false)
+				commit('setError', 'You must be logined')
+			}
 		},
 		async addComment ({commit, getters}, { id, text, length }) {
 			commit('clearError')
 			commit('setLoading', true)
 
 			var user = getters.userId
-			var userInfo
 
 			if (user) {
-				var key = fb.database().ref('cards/' + id + '/comments/').push({
-					[user]: text
+				var base = await fb.database();
+				var update = {};
+
+				update['cards/' + id + '/comments'] = length + 1
+				base.ref().update(update)
+
+				var key = base.ref('comments/' + id).push({
+					text,
+					user,
+					like: 0
 				}).key
 				
-				fb.database().ref('cards/' + id + '/comments/').update({
-					// [user]: text,
-					length: length + 1,
-				})
-
-				await fb.database().ref('users').child(user).once("value", u => {
-					userInfo = {
-						id: user,	
-						name: u.val().name,
-						img: u.val().image
-					}
-				});
-
-				commit('addComment', { key, text, user: userInfo, id })
+				// commit('addComment', { key, text, user: getters.user, id })
 				commit('setLoading', false)
+				commit('setError', { msg: 'Сomment has been added', color: 'primary' })
 			} else {
 				commit('setLoading', false)
 				commit('setError', 'You must be logined')
@@ -332,9 +371,6 @@ export default {
       return cardId => {
         return state.cards.find(card => card.id === cardId)
       }
-		},
-		otherCard (state) {
-			return state.otherCard
 		}
   }
 }

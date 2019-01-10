@@ -47,7 +47,6 @@ new Vue({
 			}
 		})
 		
-		// this.$store.dispatch('createCard')
 		this.$store.dispatch('fetchCards')
 	}
 })

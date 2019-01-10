@@ -71,27 +71,30 @@
 		<v-card-actions>
 			<v-spacer></v-spacer>
 			
+				<!-- :color="card.visit.length < card.people ? 'red' : 'primary'" -->
 			<v-btn
 				flat
-				:color="card.visit < card.people ? 'red' : 'primary'"
-				@click="toggVisit({ id: card.id, length: card.visit })"
+				:color="card.visit.red ? 'red' : 'primary'"
+				@click="toggVisit({ id: card.id, length: card.visit.length, red: card.visit.red })"
 			>
-				<span>{{ card.visit }} / {{ card.people }}</span>
-				<v-icon right>people</v-icon>
+				<span>{{ card.visit.length }} / {{ card.people }}</span>
+				<v-icon right>{{ card.visit.red ? 'check' : 'people' }}</v-icon>
 			</v-btn>
+
 			<v-btn
 				flat
 				@click="loadCard(card.id)"
 			>
-				<span>{{ card.commLength }}</span>
+				<span>{{ card.comments }}</span>
 				<v-icon right>chat</v-icon>
 			</v-btn>
+
 			<v-btn 
 				flat
-				:color="card.like !== undefined && card.like.red ? 'red' : ''"
-				@click="toggLike({ id: card.id, length: card.like.length })"
+				:color="card.like.red ? 'red' : ''"
+				@click="toggLike({ id: card.id, length: card.like.length, red: card.like.red })"
 			>
-				<span v-if="card.like !== undefined">{{ card.like.length }}</span>
+				<span>{{ card.like.length }}</span>
 				<v-icon right>favorite</v-icon>
 			</v-btn>
 		</v-card-actions>
@@ -100,6 +103,7 @@
 
 <script>
 	export default {
+		name: 'Card',
 		props: {
 			card: Object,
 			required: true
@@ -110,12 +114,12 @@
 			}
 		},
 		methods: {
-			toggLike ({id, length}) {
-				this.$store.dispatch('toggleLike', {id, length})
+			toggLike ({id, length, red}) {
+				this.$store.dispatch('toggleLike', {id, length, red})
 			},
-			toggVisit ({id, length}) {
-				this.$store.dispatch('toggleVisit', {id, length})
-				this.$store.dispatch('setError', {msg:"Okey toggle visit", color:"primary"})
+			toggVisit ({id, length, red}) {
+				this.$store.dispatch('toggleVisit', {id, length, red})
+				// this.$store.dispatch('setError', {msg:"Okey toggle visit", color:"primary"})
 			},
       loadCard (id) {
         this.$router.push('/card/' + id + '#comments')

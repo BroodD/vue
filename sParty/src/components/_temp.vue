@@ -1,3 +1,17 @@
+Find friends for meet New Year with some good red wine
+Only good & smart people (18+)
+
+Super puper New Year
+(no) it is joke
+
+Musical evenings
+Melody
+
+GO run around city lake
+every day
+
+
+
 single
 
 <template>

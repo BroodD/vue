@@ -1,14 +1,5 @@
 import * as fb from 'firebase'
-
-class User {
-	constructor(id = '', login = '', name = '', image = '', bio = '') {
-		this.id = id
-		this.login = login
-		this.name = name
-		this.image = image
-		this.bio = bio
-	}
-}
+import { User } from '@/class/Mixin'
 
 export default {
 	state: {

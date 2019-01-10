@@ -66,7 +66,7 @@
       ></v-toolbar-side-icon>
 
       <v-toolbar-title>
-        <router-link to="/" tag="span" class="pointer">sParty</router-link>
+        <router-link to="/" tag="span" class="pointer">sParty {{ bottomNav  }}</router-link>
       </v-toolbar-title>
 
       <v-spacer></v-spacer>
@@ -148,10 +148,42 @@
 			</transition>
     </v-content>
 
+		<v-bottom-nav
+			class="hidden-sm-and-up"
+      :active.sync="bottomNav"
+      :value="true"
+			fixed
+			color="primary"
+    >
+      <v-btn
+        flat
+        value="recent"
+      >
+        <span>Recent</span>
+        <v-icon>history</v-icon>
+      </v-btn>
+
+      <v-btn
+        flat
+        value="favorites"
+      >
+        <span>Favorites</span>
+        <v-icon>favorite</v-icon>
+      </v-btn>
+
+      <v-btn
+        flat
+        value="nearby"
+      >
+        <span>Nearby</span>
+        <v-icon>place</v-icon>
+      </v-btn>
+    </v-bottom-nav>
+
 			<!-- error -->
     <template v-if="error">
       <v-snackbar
-        :timeout="5000"
+        :timeout="4000"
         :multi-line="true"
         :color="error.color || 'error'"
         @input="closeError"
@@ -170,7 +202,9 @@ export default {
   data () {
     return {
 			drawer: false,
-			transitionName: ''
+			transitionName: '',
+
+			bottomNav: 'recent'
     }
   },
   computed: {
