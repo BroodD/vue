@@ -1,27 +1,39 @@
 <template>
   <v-container grid-list-md>
 		<v-layout row wrap>
-			<v-flex sm5 justify-center pb-5 class="tac">
+			<v-flex sm5 lg3 justify-center pb-5 class="tac">
 				<v-avatar
 					size="200"
 				>
 					<v-img position="top left" :src="user.image" alt="avatar" />
 				</v-avatar>
 			</v-flex>
-			<v-flex sm>
-				<h1>{{ user.login }}</h1>
+			<v-flex sm lg4>
+				<v-layout row wrap align-content-start>
+						<h1>{{ user.login }}</h1>
+						<v-spacer></v-spacer>
+
+						<v-btn
+							color="primary"
+							@click="toggFollow"
+						>
+							<span>{{ user.follow ? 'Following' : 'Follow' }}</span>
+							<v-icon right>{{ user.follow ? 'check' : 'star' }}</v-icon>
+						</v-btn>
+						<v-spacer></v-spacer>
+				</v-layout>
+
 				<h5>{{ user.name }}</h5>
-				<p class="mt-3">{{ user.bio }}</p>
+				<p class="mt-3" style="white-space: pre-wrap;">{{ user.bio }}</p>
 				<v-layout row wrap>
-					<v-flex sm>
 						<p><strong>{{ userCards.length }}</strong> cards</p>
-					</v-flex>
-					<v-flex sm>
+						<v-spacer></v-spacer>
+
 						<p><strong>12k</strong> followers</p>
-					</v-flex>
-					<v-flex sm>
+						<v-spacer></v-spacer>
+
 						<p><strong>5,805</strong> following</p>
-					</v-flex>
+						<v-spacer></v-spacer>
 				</v-layout>
 			</v-flex>
 		</v-layout>
@@ -59,10 +71,15 @@ export default {
 			if( this.id != this.$store.getters.userId)
 				return this.$store.getters.otherUser
 			return this.$store.getters.user
+		},
+	},
+	methods: {
+		toggFollow() {
+			this.user.follow = !this.user.follow
 		}
 	},
-	created () {
-		if( this.id != this.$store.getters.userId)
+	async created () {
+		if( this.id != await this.$store.getters.userId)
 			this.$store.dispatch('otherUser', this.id)
 	}
 }

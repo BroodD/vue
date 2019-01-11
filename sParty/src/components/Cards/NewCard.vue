@@ -6,7 +6,7 @@
 					class="elevation-12"
 				>
 					<v-toolbar dark color="primary">
-            <v-toolbar-title>Create new card</v-toolbar-title>
+            <v-toolbar-title>Create new card {{ formatDate }}</v-toolbar-title>
           </v-toolbar>
 
 					<v-card-text>
@@ -184,7 +184,7 @@
 				desc: '',
 				people: '',
         images: [],
-				time: null,
+				time: '00:00',
 				timeModal: false,
 				date: null,
 				dateModal: false,
@@ -203,7 +203,47 @@
     computed: {
       loading () {
         return this.$store.getters.loading
-      }
+			},
+			formatDate () {
+				// !! delete the from here after
+
+				if ( !(this.date && this.time) ) return
+
+				var now = new Date()
+				var obj = new Date( this.date + ' ' + this.time )
+
+				var mi = obj.getMinutes() < 9 ? '0' + obj.getMinutes() : obj.getMinutes()
+				var h = obj.getHours() < 9 ? '0' + obj.getHours() : obj.getHours()
+				var d = obj.getDate() < 9 ? '0' + obj.getDate() : obj.getDate()
+				var m = obj.getMonth() < 9 ? '0' + obj.getMonth() : obj.getMonth()
+				var y = obj.getFullYear()
+
+				var f
+
+				if( obj < now) return 'Old card'
+
+				if ( y == now.getFullYear())
+					if ( m - now.getMonth() == 0)
+						
+						if ( d - now.getDate() == 0)
+							f = 'Today';
+						else if ( d - now.getDate() == 1)
+							f = 'Tommorow';
+						else if ( d - now.getDate() <= 7)
+							f = 'This week';
+						else if (d - now.getDate() <= 14)
+							f = 'Next week';
+						else
+							f = 'This month'
+					else if ( m - now.getMonth() == 1)
+						f = 'Next month';
+					else
+						f = `${d}/${m}`
+				else
+					f = `${d}/${m}/${ (y + '').slice(-2) }`
+
+				return `at ${f} ${h}:${mi}`
+			}
     },
     methods: {
       createCard () {
@@ -211,8 +251,7 @@
           const card = {
             title: this.title,
 						desc: this.desc,
-						time: this.time,
-						date: this.date,
+						time: -Date.parse(this.date + ' ' + this.time),
 						people: this.people,
 						images: this.images,
             files: this.files

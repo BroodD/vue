@@ -25,7 +25,7 @@ Vue.component('Card', Card)
 
 /* eslint-disable no-new */
 new Vue({
-  el: '#app',
+	el: '#app',
 	router,
 	store,
   components: { App, Card },

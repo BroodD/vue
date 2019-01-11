@@ -110,10 +110,23 @@ export default {
 			fb.auth().signOut()
 			commit('setUser', null)
 		},
-		async otherUser({commit}, id) {
-			const fbVal = await fb.database().ref('users/' + id).once('value')
-			const userInfo = fbVal.val()
-			commit('setOtherUser', new User(id, userInfo.login, userInfo.name, userInfo.image, userInfo.bio))
+		async otherUser({commit, getters}, id) {
+			var base = await fb.database().ref()
+			var userInfo
+			var user
+			var fbVal
+
+			await base.child('users/' + id).once('value', e => {
+				userInfo = e.val()
+			})
+
+			await base.child('users/' + getters.userId + '/friends/' + id).once('value', e => {
+				user = new User(id, userInfo.login, userInfo.name, userInfo.image, userInfo.bio)
+				user.follow = e.val() && 1
+				console.log(user, e.val(), 'user')
+			})
+
+			commit('setOtherUser', user)
 		}
 	},
 	getters: {

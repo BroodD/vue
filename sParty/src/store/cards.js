@@ -59,7 +59,6 @@ export default {
           payload.desc,
           getters.userId,
           payload.time,
-					payload.date,
           { length: 0 },
 					{ length: 0 },
 					payload.people,
@@ -80,6 +79,7 @@ export default {
 				}
 				
 				newCard.img = imageSrc
+				newCard.create = -Date.now()
 				await fb.database().ref('cards').push(newCard)
 
         newCard.ownerName = getters.user.name
@@ -143,7 +143,6 @@ export default {
 										e.val().desc,
 										e.val().ownerId,
 										e.val().time,
-										e.val().date,
 										{ length: e.val().like.length, red},
 										{length: e.val().visit.length, red: visit},
 										e.val().people,
@@ -168,51 +167,51 @@ export default {
         throw error
       }
 		},
-		async userCards({ commit, getters }, { id, user }) {
-			commit('clearError')
-			commit('setLoading', true)
+		// async userCards({ commit, getters }, { id, user }) {
+		// 	commit('clearError')
+		// 	commit('setLoading', true)
 
-			var resultCards = []
+		// 	var resultCards = []
 
-			try {
-				var _cards = await fb
-						.database()
-						.ref("cards")
-				var _userCards = await fb.database().ref('users/' + id + '/cards')
+		// 	try {
+		// 		var _cards = await fb
+		// 				.database()
+		// 				.ref("cards")
+		// 		var _userCards = await fb.database().ref('users/' + id + '/cards')
 
-				_userCards.once('value', snap => {
-					snap.forEach(e => {
-						_cards.child(e.key).once('value', card => {
-							let red = card.val().like[getters.userId] ? true : false;
-							resultCards.push(
-								new Cards(
-									card.val().title,
-									card.val().desc,
-									card.val().ownerId,
-									card.val().time,
-									card.val().date,
-									{ length: card.val().like.length, red },
-									card.val().visit.length,
-									card.val().people,
-									card.val().comments.length,
-									user.name,
-									user.image,
-									card.val().img,
-									e.key
-								)
-							)
-						})
-					})
-				})
+		// 		_userCards.once('value', snap => {
+		// 			snap.forEach(e => {
+		// 				_cards.child(e.key).once('value', card => {
+		// 					let red = card.val().like[getters.userId] ? true : false;
+		// 					resultCards.push(
+		// 						new Cards(
+		// 							card.val().title,
+		// 							card.val().desc,
+		// 							card.val().ownerId,
+		// 							card.val().time,
+		// 							card.val().date,
+		// 							{ length: card.val().like.length, red },
+		// 							card.val().visit.length,
+		// 							card.val().people,
+		// 							card.val().comments.length,
+		// 							user.name,
+		// 							user.image,
+		// 							card.val().img,
+		// 							e.key
+		// 						)
+		// 					)
+		// 				})
+		// 			})
+		// 		})
 
-				commit('loadCards', resultCards)
-				commit('setLoading', false)
-			} catch (error) {
-				commit('setError', error.message)
-				commit('setLoading', false)
-				throw error
-			}
-		},
+		// 		commit('loadCards', resultCards)
+		// 		commit('setLoading', false)
+		// 	} catch (error) {
+		// 		commit('setError', error.message)
+		// 		commit('setLoading', false)
+		// 		throw error
+		// 	}
+		// },
 		// async fetchVisit({ commit, getters }) {
 		// 	commit('clearError')
 		// 	commit('setLoading', true)

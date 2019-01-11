@@ -62,8 +62,7 @@
 		<v-card-text>
 			<div>
 				<v-icon color="black">today</v-icon>
-				<strong>{{ card.date }}</strong>
-				<span>{{ card.time }}</span>
+				<strong>{{ card.time | formatDate }}</strong>
 			</div>
 		</v-card-text>
 
@@ -83,7 +82,7 @@
 
 			<v-btn
 				flat
-				@click="loadCard(card.id)"
+				:to="'card/' + card.id + '#comments'"
 			>
 				<span>{{ card.comments }}</span>
 				<v-icon right>chat</v-icon>
@@ -120,11 +119,44 @@
 			toggVisit ({id, length, red}) {
 				this.$store.dispatch('toggleVisit', {id, length, red})
 				// this.$store.dispatch('setError', {msg:"Okey toggle visit", color:"primary"})
-			},
-      loadCard (id) {
-        this.$router.push('/card/' + id + '#comments')
-        // this.$router.push('/card/' + id)
-      }
+			}
+		},
+		filters: {
+			formatDate (value) {
+				var now = new Date()
+				var obj = new Date( Math.abs( value ) )
+				var mi = obj.getMinutes() < 9 ? '0' + obj.getMinutes() : obj.getMinutes()
+				var h = obj.getHours() < 9 ? '0' + obj.getHours() : obj.getHours()
+				var d = obj.getDate() < 9 ? '0' + obj.getDate() : obj.getDate()
+				var m = obj.getMonth() < 9 ? '0' + obj.getMonth() : obj.getMonth()
+				var y = obj.getFullYear()
+
+				var f
+
+				if( obj < now) return 'Past event'
+				
+				if ( y == now.getFullYear())
+					if ( m - now.getMonth() == 0)
+						
+						if ( d - now.getDate() == 0)
+							f = 'Today';
+						else if ( d - now.getDate() == 1)
+							f = 'Tommorow';
+						else if ( d - now.getDate() <= 7)
+							f = 'This week';
+						else if (d - now.getDate() <= 14)
+							f = 'Next week';
+						else
+							f = 'This month'
+					else if ( m - now.getMonth() == 1)
+						f = 'Next month';
+					else
+						f = `${d}/${m}`
+				else
+					f = `${d}/${m}/${ (y + '').slice(-2) }`
+
+				return `${f} ${h}:${mi}`
+			}
 		}
 	}
 </script>

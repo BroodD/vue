@@ -19,7 +19,7 @@
 								<v-form v-model="valid" ref="form" lazy-validation>
 									<v-layout row wrap>
 										<v-flex md4>
-											<img :src="imageSrc || user.image" @click="triggerUpload"></img>
+											<img :src="imageSrc || user.image" @click="triggerUpload">
 											<input
 												ref="fileInput"
 												type="file"
@@ -48,6 +48,7 @@
 										label="Bio"
 										:value="user.bio"
 										@input="bio = $event"
+										auto-grow
 									></v-textarea>
 									<v-text-field
 										box

@@ -66,7 +66,7 @@
       ></v-toolbar-side-icon>
 
       <v-toolbar-title>
-        <router-link to="/" tag="span" class="pointer">sParty {{ bottomNav  }}</router-link>
+        <router-link to="/" tag="span" class="pointer">EventTime</router-link>
       </v-toolbar-title>
 
       <v-spacer></v-spacer>
@@ -149,7 +149,7 @@
     </v-content>
 
 		<v-bottom-nav
-			class="hidden-sm-and-up"
+			class="hidden-md-and-up"
       :active.sync="bottomNav"
       :value="true"
 			fixed
@@ -157,26 +157,42 @@
     >
       <v-btn
         flat
-        value="recent"
+        value="home"
+				to="/"
+				dark
       >
-        <span>Recent</span>
-        <v-icon>history</v-icon>
+        <span>Home</span>
+        <v-icon>home</v-icon>
       </v-btn>
 
       <v-btn
         flat
-        value="favorites"
+        value="new"
+				to="/new"
+				dark
       >
-        <span>Favorites</span>
-        <v-icon>favorite</v-icon>
+        <span>Add</span>
+        <v-icon>add_box</v-icon>
       </v-btn>
 
       <v-btn
         flat
-        value="nearby"
+        value="user"
+				:to="'/user/' + userId"
+				dark
       >
-        <span>Nearby</span>
-        <v-icon>place</v-icon>
+        <span>My account</span>
+        <v-icon>person</v-icon>
+      </v-btn>
+
+      <v-btn
+        flat
+        value="visit"
+				to="/visit"
+				dark
+      >
+        <span>My meets</span>
+        <v-icon>watch_later</v-icon>
       </v-btn>
     </v-bottom-nav>
 
@@ -204,10 +220,13 @@ export default {
 			drawer: false,
 			transitionName: '',
 
-			bottomNav: 'recent'
+			bottomNav: 'home'
     }
   },
   computed: {
+		loading () {
+			this.$store.getters.loading
+		},
 		user () {
 			return this.$store.getters.user
 		},
@@ -258,9 +277,10 @@ export default {
 	},
 	// watch: {
 	// 	'$route' (to, from) {
-	// 		const toDepth = to.path.split('/').length
-	// 		const fromDepth = from.path.split('/').length
-	// 		this.transitionName = toDepth < fromDepth || to.path.length < from.path.length ? 'slide-right' : 'slide-left'
+	// 		console.log(to)
+			// const toDepth = to.path.split('/').length
+			// const fromDepth = from.path.split('/').length
+			// this.transitionName = toDepth < fromDepth || to.path.length < from.path.length ? 'slide-right' : 'slide-left'
 	// 	}
 	// }
 }

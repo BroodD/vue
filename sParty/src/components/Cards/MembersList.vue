@@ -38,10 +38,9 @@
 			}
 		},
 		async created () {
-			var _visit = await fb
-				.database()
-				.ref("visit/" + this.id)
-			var _users = await fb.database().ref("users")
+			var base = await fb.database().ref()
+			var _visit = base.child("cards/" + this.id + '/visit')
+			var _users = base.child("users")
 			var members = []
 
 			// get members i set here firebase listener chil_added and maybe need off this on destroy component
@@ -59,6 +58,8 @@
 			})
 
 			_visit.limitToLast(8).on("child_removed", card => {
+				console.log( this.$store.getters.cards )
+
 				this.members = []
 			})
 

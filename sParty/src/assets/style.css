@@ -38,3 +38,9 @@ a {
 .tac {
 	text-align: center;
 }
+
+@media only screen and (max-width: 960px) {
+	.v-content {
+		padding-bottom: 56px;
+	}
+}
