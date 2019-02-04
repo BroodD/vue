@@ -5,6 +5,43 @@
 const path = require('path')
 
 module.exports = {
+	module: {
+		rules: [
+			// ... другие правила опущены
+
+			// это правило будет применяться к обычным файлам `.scss`
+			// А ТАКЖЕ к секциям `<style lang="scss">` в файлах `.vue`
+			{
+				test: /\.sass$/,
+				use: [
+					'vue-style-loader',
+					'css-loader',
+					{
+						loader: 'sass-loader',
+						options: {
+							indentedSyntax: true
+						}
+					}
+				]
+			},
+		],
+		loaders: [
+			{
+				test: /\.vue$/,
+				loader: 'vue'
+			},
+			{
+				test: /\.s[a|c]ss$/,
+				loader: 'style!css!sass'
+			}
+		],
+		vue: {
+			loaders: {
+				scss: 'style!css!sass'
+			}
+		}
+	},
+
   dev: {
 
     // Paths

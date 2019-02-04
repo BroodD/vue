@@ -143,7 +143,7 @@
 
           this.$store.dispatch('registerUser', user)
             .then(() => {
-              this.$router.push('/')
+              this.$router.push('/login')
             })
             .catch(() => {})
         }

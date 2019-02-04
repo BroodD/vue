@@ -1,7 +1,7 @@
 <template>
   <v-container grid-list-md>
-		<v-layout row wrap>
-			<v-flex xs12 md6
+		<v-layout row wrap justify-center class="card-wrap">
+			<v-flex xs12 md8
 				v-for="card in cards"
 				:key="card.id"
 			>
@@ -13,10 +13,12 @@
 		<v-layout row wrap>
 			<v-flex class="tac">
 				<v-btn
+					round
+					large
 					color="primary"
-					dark
-					small
 					@click="reload"
+					:loading="loading"
+					:disabled="loading"
 				>
 					show more
 				</v-btn>
@@ -33,16 +35,29 @@ export default {
 		},
 		userId () {
 			return this.$store.getters.userId
+		},
+		loading () {
+			return this.$store.getters.loading
 		}
+		// endAt () {
+		// 	return this.$store.getters.end
+		// }
 	},
 	methods: {
 		reload() {
-			this.$store.dispatch('fetchCards', this.cards[this.cards.length - 1].id)
+			var endAt = this.$store.getters.end
+			if(endAt)
+				this.$store.dispatch('fetchCards', endAt)
+			else
+				this.$store.dispatch('setError', { msg: 'No more cards', color: 'orange' })
+			// this.$store.dispatch('fetchCards', this.cards[this.cards.length - 1].id)
 			// this.$store.dispatch('setError', { msg: 'Reload cards', color: 'primary' })
 		},
-		onScroll(e) {
-			console.log(e.target.scrollTop)
-		}
+	},
+	beforeCreate () {
+		console.log('create')
+		this.$store.commit('loadCards', [])
+		this.$store.dispatch('fetchCards')
 	}
 }
 </script>

@@ -16,6 +16,7 @@ Vue.config.devtools = true
 Vue.use(Vuetify, {
 	theme: {
 		primary: '#097275'
+		// primary: '#28c5b1'
 	}
 })
 
@@ -30,23 +31,43 @@ new Vue({
 	store,
   components: { App, Card },
 	template: '<App/>',
-	created() {
-		fb.initializeApp({
+	async beforeCreate() {
+		await fb.initializeApp({
 			apiKey: "AIzaSyB1B2yJmi94g0hGCMvPnpsJ7CbXzR2wL4I",
 			authDomain: "sparty-3251e.firebaseapp.com",
 			databaseURL: "https://sparty-3251e.firebaseio.com",
 			projectId: "sparty-3251e",
 			storageBucket: "sparty-3251e.appspot.com",
 			messagingSenderId: "435493051386"
+
+			// apiKey: "AIzaSyCh6LNMxHX3cfYBI7zdDXShoaCH0CT1ND4",
+			// authDomain: "time-4-event.firebaseapp.com",
+			// databaseURL: "https://time-4-event.firebaseio.com",
+			// projectId: "time-4-event",
+			// storageBucket: "time-4-event.appspot.com",
+			// messagingSenderId: "984805020632"
 		})
-		
-		
-		fb.auth().onAuthStateChanged(user => {
+
+		await fb.auth().onAuthStateChanged(user => {
+			console.log('--onAuthStateChanged--')
 			if (user) {
-				this.$store.dispatch('autoLoginUser', user)
+				if (user.emailVerified) {
+					this.$store.dispatch('autoLoginUser', user)
+					this.$router.push('/')
+				} else {
+					var th = this
+					user.sendEmailVerification().then(function () {
+						// commit('setError', 'Email send')
+						th.$store.commit('setError', { msg: 'Verification email sent to ' + user.email, color: 'orange' })
+					}).catch(function (error) {
+						th.$store.commit('setError', error)
+					});
+					// this.$store.commit('setError', 'Please verify your email ' + user.email)
+				}
+			} else {
+				this.$store.commit('setError', 'No login')
 			}
 		})
-		
-		this.$store.dispatch('fetchCards')
+
 	}
 })

@@ -32,6 +32,7 @@
 				label="Your comment"
 				v-model="text"
 				class="mt-2"
+				auto-grow
 			></v-textarea>
 			<v-btn color="primary" @click="addComment">Send</v-btn>
 		</v-card-text>
@@ -50,7 +51,7 @@
 		data () {
 			return {
 				comments: [],
-				text: ''
+				text: '',
 			}
 		},
 		methods: {
@@ -64,6 +65,8 @@
 			}
 		},
 		async created () {
+			var base = await fb.database().ref()
+
 			var _comments = await fb
 				.database()
 				.ref("comments/" + this.id)
@@ -86,24 +89,6 @@
 			});
 
 			this.comments = comments
-			
-			
-			// _cards.child('comments').limitToLast(10).once("value", snap => {
-			// 	if (typeof snap.val() == "object" && snap.val()) {
-			// 		snap.forEach(comment => {
-			// 			comment.forEach(e => {
-			// 				_users.child(e.key).once("value", user => {
-			// 					comments.push({
-			// 						id: comment.key,
-			// 						name: user.val().name,
-			// 						img: user.val().image,
-			// 						text: e.val()
-			// 					})
-			// 				})
-			// 			})
-			// 		})
-			// 	}
-			// });
 		}
 	}
 </script>

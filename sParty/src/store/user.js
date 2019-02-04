@@ -20,12 +20,11 @@ export default {
 			commit('setLoading', true)
 			try {
 				const user = await fb.auth().signInWithEmailAndPassword(email, password)
-				const key = user.user.uid
+				// const key = user.user.uid
+				// 	const fbVal = await fb.database().ref('users/' + key).once('value')
+				// 	const userInfo = fbVal.val()
 
-				const fbVal = await fb.database().ref('users/' + key).once('value')
-				const userInfo = fbVal.val()
-
-				commit('setUser', new User(key, userInfo.login, userInfo.name, userInfo.image, userInfo.bio))
+				// 	commit('setUser', new User(key, userInfo.login, userInfo.name, userInfo.image, userInfo.bio))
 				commit('setLoading', false)
 			} catch (error) {
 				commit('setLoading', false)
@@ -41,7 +40,7 @@ export default {
 				const key = user.user.uid
 				let imageSrc
 				let imageExt = image.name.slice(image.name.lastIndexOf('.') + 1)
-				let fileData = await fb.storage().ref(`user/${key}.${imageExt}`).put(image)
+				let fileData = await fb.storage().ref(`users/${key}.${imageExt}`).put(image)
 					.then(snapshot => snapshot.ref.getDownloadURL())
 					.then(url => imageSrc = url)
 				await fb.database().ref('users/' + key).set({
@@ -49,8 +48,17 @@ export default {
 					name,
 					image: imageSrc,
 				})
+
+				// var u = await fb.auth().currentUser;
+
+				// u.sendEmailVerification().then(function () {
+				// 	// commit('setError', 'Email send')
+				// 	commit('setError', { msg: 'Verification email sent to ' + u.email, color: 'primary'})
+				// }).catch(function (error) {
+				// 	commit('setError', error)
+				// });
 				
-				commit('setUser', new User(key, login, name, imageSrc))
+				// commit('setUser', new User(key, login, name, imageSrc))
 				commit('setLoading', false)
 			} catch (error) {
 				commit('setLoading', false)
@@ -59,6 +67,7 @@ export default {
 			}
 		},
 		async autoLoginUser({ commit }, payload) {
+			console.log('autoLoginUser->payload', payload)
 			const fbVal = await fb.database().ref('users/' + payload.uid).once('value')
 			const userInfo = fbVal.val()
 			commit('setUser', new User(payload.uid, userInfo.login, userInfo.name, userInfo.image, userInfo.bio))
@@ -71,7 +80,6 @@ export default {
 
 			var imageSrc
 			if(typeof image == 'object') {
-				console.log('here')
 				var imageExt = image.name.slice(image.name.lastIndexOf('.') + 1)
 				var fileData = await fb.storage().ref(`user/${uid}.${imageExt}`).put(image)
 					.then(snapshot => snapshot.ref.getDownloadURL())
@@ -123,7 +131,6 @@ export default {
 			await base.child('users/' + getters.userId + '/friends/' + id).once('value', e => {
 				user = new User(id, userInfo.login, userInfo.name, userInfo.image, userInfo.bio)
 				user.follow = e.val() && 1
-				console.log(user, e.val(), 'user')
 			})
 
 			commit('setOtherUser', user)

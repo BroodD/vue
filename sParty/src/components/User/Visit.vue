@@ -1,7 +1,7 @@
 <template>
   <v-container grid-list-md>
-		<v-layout row wrap v-if="cards.length">
-			<v-flex xs12 md6
+		<v-layout row wrap justify-center v-if="cards.length" class="card-wrap">
+			<v-flex xs12 md8
 				v-for="card in cards"
 				:key="card.id"
 			>
@@ -28,5 +28,9 @@ export default {
 			return this.$store.getters.cards
 		}
 	},
+	beforeMount () {
+		this.$store.commit('loadCards', [])
+		this.$store.dispatch('fetchVisit')
+	}
 }
 </script>

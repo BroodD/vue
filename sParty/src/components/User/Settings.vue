@@ -3,6 +3,8 @@
 		<v-layout align-center justify-center>
       <v-flex xs12 sm8>
 
+				<!-- <v-btn></v-btn> -->
+
 				<v-tabs
 					color="primary"
 					dark
@@ -13,7 +15,7 @@
 					<v-tab
 					>Change password</v-tab>
 
-					<v-tab-item>
+					<v-tab-item :transition="false" :reverse-transition="false">
 						<v-card class="elevation-12">
 							<v-card-text>
 								<v-form v-model="valid" ref="form" lazy-validation>
@@ -77,7 +79,7 @@
 							</v-card-actions>
 						</v-card>
 					</v-tab-item>
-					<v-tab-item>
+					<v-tab-item :transition="false" :reverse-transition="false">
 						<v-card>
 							<v-card-text>
 								<v-text-field

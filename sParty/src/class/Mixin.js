@@ -18,7 +18,7 @@ class Cards {
 
 export
 class User {
-	constructor(id = '', login = '', name = '', image = '', bio = '') {
+	constructor(id = '', login = '', name = '', image = '', bio = '', emailVerified = false) {
 		this.id = id
 		this.login = login
 		this.name = name

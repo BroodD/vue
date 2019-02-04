@@ -3,9 +3,23 @@
     <v-navigation-drawer
       app
       temporary
+			dark
       v-model="drawer"
+			width="280"
+			v-if="isUserLoggedIn"
     >
 			<v-list dense>
+				<div class="por">
+
+					<v-img :src="user.image"></v-img>
+
+					<v-subheader class="avatar__sub">
+						{{ user.name }}
+						<v-spacer></v-spacer>
+						{{ user.login }}
+					</v-subheader>
+				</div>
+
 				<template v-for="link in links">
 					<v-list-group
 						v-if="link.children"
@@ -32,6 +46,7 @@
 							</v-list-tile-content>
 						</v-list-tile>
 					</v-list-group>
+
 					<v-list-tile
 						v-else 
 						:key="link.text"
@@ -59,8 +74,11 @@
 			app
 			dark
 			color="primary"
+			scroll-off-screen
 		>
+			<!-- inverted-scroll -->
       <v-toolbar-side-icon
+				v-if="isUserLoggedIn"
         @click="drawer = !drawer"
         class="hidden-md-and-up"
       ></v-toolbar-side-icon>
@@ -71,7 +89,7 @@
 
       <v-spacer></v-spacer>
 
-			<v-toolbar-items class="hidden-sm-and-down">
+			<v-toolbar-items :class="isUserLoggedIn ? 'hidden-sm-and-down' : ''">
 				<v-menu
 						v-for="link in links"
 						:key="link.title"
@@ -81,10 +99,18 @@
 					<v-btn
 						slot="activator"
 						flat
-						:to="link.children ? '':link.url"
+						:to="link.children ? '' : link.url"
 					>
-						<v-icon left>{{ link.icon }}</v-icon>
-						{{ link.text }}
+						<template v-if="link.icon">
+							<v-icon left>{{ link.icon }}</v-icon>
+							<span>{{ link.text }}</span>
+						</template>
+						<template v-else>
+							<span class="mr-3">{{ user.name }}</span>
+							<v-avatar>
+								<v-img position="top left" :src="user.image"></v-img>
+							</v-avatar>
+						</template>
 					</v-btn>
 
 					<v-list
@@ -97,39 +123,6 @@
 						>
 							<v-list-tile-title>{{ child.text }}</v-list-tile-title>
 						</v-list-tile>
-					</v-list>
-				</v-menu>
-
-				<v-menu
-					v-if="isUserLoggedIn"
-					offset-y
-				>
-					<v-btn
-						slot="activator"
-						flat
-					>
-						<span class="mr-3">{{ user.name }}</span>
-						<v-avatar>
-							<v-img position="top left" :src="user.image"></v-img>
-						</v-avatar>
-					</v-btn>
-
-					<v-list>
-						<v-list-tile
-							:to="'/user/' + userId"
-						>
-							<v-list-tile-title>My cards</v-list-tile-title>
-						</v-list-tile>
-						<v-list-tile
-							to="/settings"
-						>
-							<v-list-tile-title>Settings</v-list-tile-title>
-						</v-list-tile>
-						<v-list-tile
-							to="/visit"
-						>
-							<v-list-tile-title>Visit</v-list-tile-title>
-						</v-list-tile>
 						<v-list-tile
 							@click="onLogout"
 						>
@@ -137,63 +130,35 @@
 						</v-list-tile>
 					</v-list>
 				</v-menu>
-
 			</v-toolbar-items>
     </v-toolbar>
-
 		
     <v-content>
-			<transition :name="transitionName">
-				<router-view ></router-view>
-			</transition>
+			<!-- <transition :name="transitionName"> -->
+				<router-view></router-view>
+			<!-- </transition> -->
     </v-content>
 
+      <!-- :active.sync="bottomNav" -->
 		<v-bottom-nav
+			v-if="isUserLoggedIn"
 			class="hidden-md-and-up"
-      :active.sync="bottomNav"
       :value="true"
 			fixed
 			color="primary"
+			height="47"
     >
       <v-btn
         flat
-        value="home"
-				to="/"
 				dark
+				:to="l.url"
+				v-for="(l, i) in bottom"
+				:key="i"
       >
-        <span>Home</span>
-        <v-icon>home</v-icon>
+        <!-- <span>{{ l.text }}</span> -->
+        <v-icon>{{ l.icon }}</v-icon>
       </v-btn>
 
-      <v-btn
-        flat
-        value="new"
-				to="/new"
-				dark
-      >
-        <span>Add</span>
-        <v-icon>add_box</v-icon>
-      </v-btn>
-
-      <v-btn
-        flat
-        value="user"
-				:to="'/user/' + userId"
-				dark
-      >
-        <span>My account</span>
-        <v-icon>person</v-icon>
-      </v-btn>
-
-      <v-btn
-        flat
-        value="visit"
-				to="/visit"
-				dark
-      >
-        <span>My meets</span>
-        <v-icon>watch_later</v-icon>
-      </v-btn>
     </v-bottom-nav>
 
 			<!-- error -->
@@ -218,8 +183,7 @@ export default {
   data () {
     return {
 			drawer: false,
-			transitionName: '',
-
+			// transitionName: '',
 			bottomNav: 'home'
     }
   },
@@ -238,7 +202,31 @@ export default {
 		},
     isUserLoggedIn () {
       return this.$store.getters.isUserLoggedIn
-    },
+		},
+		bottom () {
+			return [
+				{
+					text: 'Home',
+					url: '/',
+					icon: 'home'
+				},
+				{
+					text: 'Add',
+					url: '/new',
+					icon: 'add_box'
+				},
+				{
+					text: 'My account',
+					url: '/user/' + this.userId,
+					icon: 'person'
+				},
+				{
+					text: 'My meets',
+					url: '/visit',
+					icon: 'watch_later'
+				},
+			]
+		},
     links () {
 			if (this.isUserLoggedIn) {
 				return [
@@ -247,23 +235,30 @@ export default {
 						url: '/new',
 						icon: 'add_circle'
 					},
-					// {
-					// 	text: this.user.name,
-					// 	url: null,
-					// 	icon: 'account_circle',
-					// 	model: false,
-					// 	children: [
-					// 		{ text: 'My cards', url: '/user/' + this.userId},
-					// 		{ text: 'Settings', url: '/settings'},
-					// 	]
-					// },
+					{
+						text: 'My meets',
+						url: '/visit',
+						icon: 'watch_later'
+					},
+					{
+						text: this.user.name,
+						url: null,
+						model: false,
+						children: [
+							{ text: 'My cards', url: '/user/' + this.userId},
+							{ text: 'Settings', url: '/settings'},
+						]
+					},
 				]
 			}
 
 			return [
-					{ text: 'Login', url: '/login', icon: 'person' },
-					{ text: 'Registration', url: '/registration', icon: 'person_add' },
-				]
+				{ 
+					text: 'Sign in/up', 
+					url: '/auth', 
+					icon: 'person'
+				},
+			]
 		},
   },
   methods: {
@@ -273,7 +268,10 @@ export default {
     onLogout () {
 			this.$store.dispatch('logoutUser')
 			this.$router.push('/')
-    }
+		},
+		// onScroll (e) {
+		// 	console.log(e.target.scrollTop)
+		// }
 	},
 	// watch: {
 	// 	'$route' (to, from) {
@@ -286,5 +284,7 @@ export default {
 }
 </script>
 
-<style src="./assets/style.css">
+<style lang="sass">
+	@import './assets/sass/_mixins.sass'
+	@import './assets/sass/style.sass'
 </style>

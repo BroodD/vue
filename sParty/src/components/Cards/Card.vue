@@ -19,33 +19,36 @@
 
 		<!-- <router-link :to="'/card/'+card.id"> -->
 		<!-- </router-link> -->
-
-		<v-img
-			v-if="Array.isArray(card.img) && card.img.length == 1"
-			:src="card.img[0]"
-			max-height="400px"
-			position="top"
+		<div class="auto-wrap"
+				v-if="Array.isArray(card.img) && card.img.length == 1"
 		>
-		</v-img>
+			<v-img
+				:src="card.img[0]"
+				position="center"
+				max-height="400px"
+				class="elevation-10 auto"
+			>
+			</v-img>
+		</div>
 
 		<v-layout
 			v-else-if="Array.isArray(card.img) && card.img.length > 1"
 		>
-			<v-flex xs12 d-flex>
-				<v-layout>
-					<v-flex xs12>
-						<v-carousel>
-							<v-carousel-item
-								v-for="(img, i) in card.img"
-								:key="i"
-								:src="img"
-								position="top"
-							></v-carousel-item>
-						</v-carousel>
-					</v-flex>
-				</v-layout>
+			<v-flex>
+				<div class="auto-wrap elevation-10">
+					<v-carousel>
+						<v-carousel-item
+							v-for="(img, i) in card.img"
+							:key="i"
+							:src="img"
+							position="center"
+						></v-carousel-item>
+					</v-carousel>
+				</div>
 			</v-flex>
 		</v-layout>
+
+		<v-divider v-else></v-divider>
 
 		<v-card-title>
 			<div>
@@ -55,9 +58,7 @@
 			</div>
 		</v-card-title>
 
-		<v-card-text>
-			{{ card.desc }}
-		</v-card-text>
+		<v-card-text class="pre">{{ card.desc }}</v-card-text>
 
 		<v-card-text>
 			<div>
@@ -82,7 +83,7 @@
 
 			<v-btn
 				flat
-				:to="'card/' + card.id + '#comments'"
+				:to="'/card/' + card.id + '#comments'"
 			>
 				<span>{{ card.comments }}</span>
 				<v-icon right>chat</v-icon>
@@ -101,6 +102,8 @@
 </template>
 
 <script>
+	import * as fb from 'firebase'
+
 	export default {
 		name: 'Card',
 		props: {

@@ -1,0 +1,64 @@
+{
+  "cards" : {
+    "-LVo67cMk_zjKIwJYWnE" : {
+      "comments" : 0,
+      "create" : -1547209357064,
+      "date" : "2019-01-16",
+      "desc" : "awd",
+      "img" : [ "https://firebasestorage.googleapis.com/v0/b/time-4-event.appspot.com/o/cards%2F-LVo67cMk_zjKIwJYWnE_0.jpg?alt=media&token=927d9485-7051-4198-a0b0-0a376807c7d0" ],
+      "like" : {
+        "length" : 0
+      },
+      "ownerId" : "GIQgjSFOr9RDtfZ5pLmBWFi8DDp1",
+      "people" : "3",
+      "time" : -1547299970026,
+      "title" : "Find friends for meet New Year with some good red wine",
+      "visit" : {
+        "length" : 0
+      }
+    },
+    "-LVrOhnfBU_SKOVn5fOY" : {
+      "comments" : 0,
+      "create" : -1547209370026,
+      "date" : "2019-01-26",
+      "desc" : "no it is joke",
+      "img" : [ "https://firebasestorage.googleapis.com/v0/b/time-4-event.appspot.com/o/cards%2F-LVrOhnfBU_SKOVn5fOY_0.jpg?alt=media&token=0b504b4b-913d-48bf-b041-4a761d90a995" ],
+      "like" : {
+				"length" : 0
+      },
+      "ownerId" : "lwvSxQGuVtOKAuv4IFzTaeOxxzg2",
+      "people" : "4",
+      "time" : -1547209378888,
+      "title" : "Super puper New Year",
+      "visit" : {
+        "length" : 0
+      }
+    }
+  },
+  "users" : {
+    "GIQgjSFOr9RDtfZ5pLmBWFi8DDp1" : {
+      "bio" : "😋😎🤘💰 make it always",
+      "friends" : {
+        "lwvSxQGuVtOKAuv4IFzTaeOxxzg2" : {
+          "priority" : -4
+        }
+      },
+      "image" : "https://firebasestorage.googleapis.com/v0/b/time-4-event.appspot.com/o/users%2FGIQgjSFOr9RDtfZ5pLmBWFi8DDp1.jpg?alt=media&token=d173ee6a-ccf1-49e5-bc0a-ead0de139338",
+      "login" : "Svya.t_t",
+      "name" : "Свят",
+      "visit" : {
+        "-LVo67cMk_zjKIwJYWnE" : 1,
+        "-LVrOhnfBU_SKOVn5fOY" : 1
+      }
+    },
+    "lwvSxQGuVtOKAuv4IFzTaeOxxzg2" : {
+      "bio" : "🌐Russia \n🔹Открытие ресторана \n🔹Разработка меню\n🔹Гала-ужины\n🔹Кейтеринг\n🔹Проведение мастер-классов\n📩Sarychevchef@bk.ru \n📲+7-905-547-59-93\nsilver-fork.ru",
+      "image" : "https://firebasestorage.googleapis.com/v0/b/time-4-event.appspot.com/o/users%2FlwvSxQGuVtOKAuv4IFzTaeOxxzg2.jpg?alt=media&token=fccf0ea4-0c2f-4a94-b50a-842de5e5058b",
+      "login" : "root",
+      "name" : "Степан",
+      "visit" : {
+        "-LVo67cMk_zjKIwJYWnE" : 1
+      }
+    }
+  }
+}

@@ -23,10 +23,8 @@
                 name="password"
                 label="Password"
                 type="password"
-                :counter="6"
                 v-model="password"
                 :rules="passwordRules"
-								validate-on-blur
               ></v-text-field>
             </v-form>
           </v-card-text>

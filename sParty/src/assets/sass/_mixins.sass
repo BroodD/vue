@@ -1,0 +1,121 @@
+
+//width
+=w($width)
+	// @media only screen and (max-width: $width+'px')
+	@media only screen and (max-width: $width+'px')
+		@content
+=mw($width)
+	// @media only screen and (min-width: $width+'px')
+	@media only screen and (min-width: $width+'px')
+		@content
+
+// height
+=h($height)
+	@media only screen and (max-height: $height+'px')
+		@content
+=mh($height)
+	@media only screen and (min-height: $height+'px')
+		@content
+
+=cover($x: null, $y: null, $cover:cover, $repeat:no-repeat)
+	background-repeat: $repeat
+	-webkit-background-size: $cover
+	-moz-background-size: $cover
+	-o-background-size: $cover
+	background-size: $cover
+	@if $x != null && $y != null
+		background-position: $x $y
+
+=bg-size($w:100%, $h:100%)
+	-moz-background-size: $w $h
+	-webkit-background-size: $w $h
+	background-color: $w $h
+
+=translate-center($pos:absolute, $top:50%, $left:50%, $x:-50%, $y:-50%)
+	position: $pos
+	top: $top
+	left: $left
+	+translate($x, $y)
+
+=translate($x:-50%, $y: -50%)
+	-webkit-transform: translate($x,$y)
+	-ms-transform: translate($x,$y)
+	transform: translate($x,$y)
+
+=translateX($x:-50%)
+	-webkit-transform: translateX($x)
+	-ms-transform: translateX($x)
+	transform: translateX($x)
+
+=translateY($x:-50%)
+	-webkit-transform: translateY($x)
+	-ms-transform: translateY($x)
+	transform: translateY($x)
+
+=font($alias, $name, $type:'ttf', $path:'../font')
+	@font-face
+		font-family: $alias
+		@if $type == 'eot'
+			src: url($path + $name + '.' + $type)
+			src: url($path + $name + '.eot?#iefix') format('embedded-opentype')
+		@if $type == 'woff2'
+			src: url($path + $name + '.' + $type) format('woff2')
+		@if $type == 'woff'
+			src: url($path + $name + '.' + $type) format("woff")
+		@if $type == 'ttf'
+			src: url($path + $name + '.' + $type) format("truetype")
+		@if $type == 'otf'
+			src: url($path + $name + '.' + $type) format("opentype")
+
+=font-all($alias, $name, $path:'../fonts')
+	@font-face
+		font-family: $alias
+		src: url($path + $name + ".eot")
+		src: url($path + $name + ".eot?#iefix") format("embedded-opentype"), url($path + $name + ".woff2") format("woff2"), url($path + $name + ".woff") format("woff"), url($path + $name + ".ttf") format("truetype")
+
+=tr($what)
+	-moz-transition: $what
+	-o-transition: $what
+	-webkit-transition: $what
+	-ms-transition: $what
+	transition: $what
+
+=center
+	text-align: center
+
+
+=rotate($var)
+	-ms-transform: rotate($var+deg)
+	-webkit-transform: rotate($var+deg)
+	transform: rotate($var+deg)
+
+=blur($var)
+	-webkit-filter: blur($var)
+	filter: blur($var)
+	
+=scale($var)
+	-ms-transform: scale($var)
+	-webkit-transform: scale($var)
+	transform: scale($var)
+
+
+
+=br($radius:50%) 
+	-webkit-border-radius: $radius
+	-moz-border-radius: $radius 
+	-ms-border-radius: $radius
+	border-radius: $radius
+	
+=bs($bshadow)
+	-webkit-box-shadow: $bshadow
+	-moz-box-shadow: $bshadow
+	-ms-box-shadow: $bshadow
+	-o-box-shadow: $bshadow
+	box-shadow: $bshadow
+
+=opacity($trans)
+	-moz-opacity: $trans
+	-html-opacity: $trans
+	opacity: $trans
+	filter: alpha(opactiy=($trans * 100))
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=#$trans * 100)"

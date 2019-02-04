@@ -10,6 +10,7 @@ import Single from '@/components/Cards/Single'
 import NewCard from '@/components/Cards/NewCard'
 import Settings from '@/components/User/Settings'
 import Visit from '@/components/User/Visit'
+import Auth from '@/components/Auth/Auth'
 
 
 Vue.use(Router)
@@ -40,6 +41,11 @@ export default new Router({
 			component: Login
 		},
 		{
+			path: '/auth',
+			name: 'auth',
+			component: Auth
+		},
+		{
 			path: '/registration',
 			name: 'registration',
 			component: Registration
@@ -67,7 +73,8 @@ export default new Router({
 		}
 	],
 	mode: 'history',
-	scrollBehavior (to, from, savedPosition) {
+	// scrollBehavior (to, from, savedPosition) {
+	scrollBehavior (to) {
 		if (to.hash) {
 			return { selector: to.hash }
 		}

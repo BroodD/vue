@@ -1,12 +1,12 @@
 <template>
    <v-container grid-list-md fluid>
-		<v-layout row wrap justify-center>
-			<v-flex xs12 sm10>
+		<v-layout row wrap justify-center class="card-wrap">
+			<v-flex xs12 md8>
 				<v-card
 					class="elevation-12"
 				>
 					<v-toolbar dark color="primary">
-            <v-toolbar-title>Create new card {{ formatDate }}</v-toolbar-title>
+            <v-toolbar-title>Create new card</v-toolbar-title>
           </v-toolbar>
 
 					<v-card-text>
@@ -27,6 +27,7 @@
 								type="text"
 								v-model="desc"
 								multi-line
+								auto-grow
 								:rules="[v => !!v || 'Description is required']"
 							></v-textarea>
 
@@ -36,7 +37,6 @@
 								type="text"
 								v-model="people"
 								:rules="peopleRules"
-								placeholder="14"
 							></v-text-field>
 							
 							<!-- <v-layout>
@@ -65,7 +65,7 @@
 									readonly
 									v-model="date"
 									:rules="dateRules"
-									placeholder="2018-01-01"
+									clearable
 								></v-text-field>
 								<v-date-picker v-model="date" @input="$refs.date.save(date)"></v-date-picker>
 							</v-dialog>
@@ -84,7 +84,7 @@
 									v-model="time"
 									label="Set a time"
 									readonly
-									placeholder="09:20"
+									clearable
 								></v-text-field>
 								<v-time-picker
 									v-model="time"
@@ -96,12 +96,12 @@
 								</v-time-picker>
 							</v-dialog>
 						</v-form>
-						<v-layout row wrap>
+						<v-layout row wrap align-start>
 							<v-flex
 								v-for="(img, i) in images"
 								:key="i"
 								d-flex
-								md4
+								xs12 md6
 							>
 								<v-card>
 									<v-img
@@ -176,6 +176,8 @@
 </template>
 
 <script>
+	import imageCompression from 'browser-image-compression';
+
   export default {
     data () {
       return {
@@ -184,7 +186,7 @@
 				desc: '',
 				people: '',
         images: [],
-				time: '00:00',
+				time: null,
 				timeModal: false,
 				date: null,
 				dateModal: false,
@@ -192,7 +194,7 @@
         valid: false,
 				dateRules: [
 					v => !!v || 'Date is required',
-					v => (new Date(Date.parse(v)) >= new Date) || 'Date must be more or equal today'
+					v => (new Date(Date.parse(v)) >= new Date(Date.now() - 864e5)) || 'Date must be more or equal today'
 				],
 				peopleRules: [
 					v => !!v || 'Count people is required',
@@ -246,7 +248,9 @@
 			}
     },
     methods: {
-      createCard () {
+      async createCard () {
+				await this.compressImages()
+
         if (this.$refs.form.validate()) {
           const card = {
             title: this.title,
@@ -267,14 +271,17 @@
       triggerUpload () {
         this.$refs.fileInput.click()
       },
-      onFileChange (event) {
-				const files = event.target.files
+      async onFileChange (event) {
+				
 				this.images = []
+				const files = event.target.files
+				
 
 				for (let i = 0; i < files.length; i++) {
 					let read = new FileReader()
 
 					read.onload = e => {
+						console.log(read)
 						this.images.push({
 							src: read.result,
 							name: files[i].name
@@ -284,7 +291,53 @@
 					read.readAsDataURL(files[i])
 				}
 
-        this.files = files;
+				// const width = 500;
+				// const height = 300;
+				// const fileName = files[0].name;
+				// const reader = new FileReader();
+				// reader.readAsDataURL(files[0]);
+				// reader.onload = event => {
+				// 		const img = new Image();
+				// 		img.src = event.target.result;
+				// 		img.onload = () => {
+				// 						const elem = document.createElement('canvas');
+				// 						elem.width = width;
+				// 						elem.height = height;
+				// 						const ctx = elem.getContext('2d');
+				// 						// img.width and img.height will give the original dimensions
+				// 						ctx.drawImage(img, 0, 0, width, height);
+				// 						ctx.canvas.toBlob((blob) => {
+				// 								const file = new File([blob], fileName, {
+				// 										type: 'image/jpeg',
+				// 										lastModified: Date.now()
+				// 								});
+				// 								console.log(file)
+				// 						}, 'image/jpeg', 1);
+				// 				},
+				// 				reader.onerror = error => console.log(error);
+				// };
+
+				this.files = files
+			},
+			async compressImages () {
+				var fil = []
+
+				const maxSizeMB = 1;
+				const maxWidthOrHeight = 1920; // compressedFile will scale down by ratio to a point that width or height is smaller than maxWidthOrHeight
+				for(let i = 0; i<this.files.length; i++) {
+					try {
+						const compressedFile = await imageCompression(this.files[i], maxSizeMB);  // maxSizeMB, maxWidthOrHeight are optional
+						console.log('compressedFile instanceof Blob', compressedFile instanceof Blob); // true
+						console.log(`compressedFile size ${compressedFile.size / 1024 / 1024} MB`); // smaller than maxSizeMB
+				
+						//await uploadToServer(compressedFile); // write your own logic
+						fil.push(compressedFile)
+					} catch (error) {
+						console.log(error);
+					}
+				}
+
+				this.files = fil
 			},
 			deleteImage (i) {
 				this.images.splice(i, 1)
