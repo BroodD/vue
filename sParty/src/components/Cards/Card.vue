@@ -1,10 +1,10 @@
 <template>
 	<v-card class="mb-2 elevation-10">
-		<v-list>
-			<router-link :to="'/user/' + card.ownerId">
-				<v-list-tile
-					avatar
-				>
+		<v-list dense>
+			<v-list-tile
+				avatar
+			>
+				<router-link :to="'/user/' + card.ownerId" class="card__author">
 					<v-avatar class="mr-3">
 						<v-img position="top left" :src="card.ownerImg"></v-img>
 					</v-avatar>
@@ -13,8 +13,31 @@
 						<v-list-tile-title>{{ card.ownerName }}</v-list-tile-title>
 						<!-- <v-list-tile-sub-title>06:40 20 April 2018 id: {{ card.id }}</v-list-tile-sub-title> -->
 					</v-list-tile-content>
+				</router-link>
+
+				<v-spacer></v-spacer>
+
+				<template v-if="card.ownerId == userId">
+					<v-btn small flat fab color="primary" :to="'/edit/' + card.id">
+						<v-icon>edit</v-icon>
+					</v-btn>
+
+					<v-dialog v-model="dialog" persistent max-width="320">
+						<v-btn slot="activator" fab dark small flat color="red">
+							<v-icon>close</v-icon>
+						</v-btn>
+						<v-card>
+							<v-card-title class="headline">Do you really want delete "{{ card.title }}"</v-card-title>
+							<v-card-actions>
+								<v-spacer></v-spacer>
+								<v-btn color="green darken-1" flat @click="dialog = false">No</v-btn>
+								<v-btn color="red darken-1" flat @click="delCard">Yes</v-btn>
+							</v-card-actions>
+						</v-card>
+					</v-dialog>
+				</template>
 				</v-list-tile>
-			</router-link>
+			<!-- </router-link> -->
 		</v-list>
 
 		<!-- <router-link :to="'/card/'+card.id"> -->
@@ -107,8 +130,15 @@
 	export default {
 		name: 'Card',
 		props: {
-			card: Object,
-			required: true
+			card: {
+				type: Object,
+				required: true
+			},
+		},
+		data () {
+			return {
+				dialog: false
+			}
 		},
 		computed: {
 			userId () {
@@ -118,10 +148,16 @@
 		methods: {
 			toggLike ({id, length, red}) {
 				this.$store.dispatch('toggleLike', {id, length, red})
+				this.card.like.red = !red
 			},
 			toggVisit ({id, length, red}) {
 				this.$store.dispatch('toggleVisit', {id, length, red})
+				this.card.visit.red = !red
 				// this.$store.dispatch('setError', {msg:"Okey toggle visit", color:"primary"})
+			},
+			delCard () {
+				this.$store.dispatch('deleteCard', { id: this.card.id, ownerId: this.card.ownerId, images: this.card.img })
+				this.dialog = false
 			}
 		},
 		filters: {
@@ -160,6 +196,20 @@
 
 				return `${f} ${h}:${mi}`
 			}
+		},
+		async beforeCreate () {
+			var base = await fb.database().ref()
+
+			base.child('cards/' + this.card.id + '/like/length').on('value', v => {
+				this.card.like.length = v.val()
+			})
+			base.child('cards/' + this.card.id + '/visit/length').on('value', v => {
+				this.card.visit.length = v.val()
+			})
+			// it for comments but duplicate in Single
+			base.child('cards/' + this.card.id + '/comments').on('value', e => {
+				this.card.comments = e.val()
+			})
 		}
 	}
 </script>

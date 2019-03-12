@@ -5,7 +5,12 @@ import { Cards } from '@/class/Mixin'
 export default {
   state: {
 		cards: [],
-		end: null
+		userCards: [],
+		visitCards: [],
+		end: null,
+		userEnd: null,
+		visitEnd: null,
+		single: null
   },
   mutations: {
     createCard (state, payload) {
@@ -14,41 +19,8 @@ export default {
     loadCards (state, payload) {
 			state.cards = payload
 		},
-		setEnd(state, { end }) {
-			state.end = end
-		},
-		toggleLike (state, { id, red }) {
-			const card = state.cards.find(c => {
-				return c.id === id
-			})
-			if (red)
-				card.like.red = false,
-				card.like.length--
-			else 
-				card.like.red = true,
-				card.like.length++
-		},
-		toggleVisit (state, { id, red }) {
-			const card = state.cards.find(c => {
-				return c.id === id
-			})
-			if (red)
-				card.visit.length--,
-				card.visit.red = false
-			else
-				card.visit.length++,
-				card.visit.red = true
-		},
-		addComment (state, { key, text, user, id }) {
-			const card = state.cards.find(c => {
-				return c.id === id
-			})
-			card.commLength++
-			state.otherCard.comments.unshift({
-				id: key,
-				...user,
-				text
-			})
+		set(state, { v, val }) {
+			state[v] = val
 		},
   },
   actions: {
@@ -56,10 +28,9 @@ export default {
       commit('clearError')
 			commit('setLoading', true)
 
+			var base = await fb.database().ref()
 			
       try {
-				// var base = await fb.database().ref()
-				
 				// title, desc, ownerId, time, date, like, visit, people, comments, ownerName = null, ownerImg = null, img = null, id = null
         const newCard = new Cards(
 					payload.title,
@@ -71,28 +42,35 @@ export default {
 					payload.people,
 					0,
 				)
+				newCard.create = -Date.now()
+				var key = await base.child('cards').push(newCard).key
 					
-				let imageSrc = []
-        const images = payload.images
-  			const files = payload.files
-				const key = await fb.database().ref('cards').push().key
-				console.log(key)
+				var imageSrc = []
+				const files = payload.files
+
+				// const key = await base.child('cards').push().key
+				// console.log(key)
 				
-				for (let i = 0; i < images.length; i++) {
-					let imageExt = images[i].name.slice(images[i].name.lastIndexOf('.') + 1)
-				
-					let fileData = await fb.storage().ref(`cards/${key}_${i}.${imageExt}`).put(files[i])
+				for (let i = 0; i < files.length; i++) {
+					let imageExt = files[i].name.slice(files[i].name.lastIndexOf('.') + 1)
+					let path = `cards/${key}_${i}.${imageExt}`
+					
+					let fileData = await fb.storage().ref(path).put(files[i])
 						.then(snapshot => snapshot.ref.getDownloadURL())
 						.then(url => imageSrc.push(url))
 				}
 				
 				newCard.img = imageSrc
-				newCard.create = -Date.now()
 
-				await base.child('cards').push(newCard)
+				base.child('cards/' + key).update({
+					img: imageSrc
+				})
+				
+				// await base.child('cards').push(newCard)
 
         newCard.ownerName = getters.user.name
 				newCard.ownerImg = getters.user.image
+				newCard.id = key
 				newCard.visit = {
 					length: 0,
 					red: false
@@ -113,21 +91,132 @@ export default {
         commit('setLoading', false)
         throw error
       }
-    },
+		},
+		async deleteCard({ commit, getters }, { id, ownerId, images }) {
+			commit('clearError')
+			commit('setLoading', true)
+
+			var uid = getters.userId
+			// console.log('deleteCard [id, ownerId, images]', id, ownerId, images)
+
+			try {
+				if (uid === ownerId) {
+					var base = await fb.database().ref();
+					var update = {};
+
+					update['cards/' + id] = null
+					update['users/' + ownerId + '/cards' + id] = null
+					base.update(update)
+
+					if(images) {
+						images.forEach(s => {
+							let indq = s.indexOf('?')
+							let inde = s.lastIndexOf('cards%2F', indq) + 8
+							let name = s.slice(inde, indq)
+							// console.log('deleteCard [indq, inde, name]', indq, inde, name)
+							fb.storage().ref("cards/" + name).delete()
+						})
+					}
+
+					commit('setLoading', false)
+					commit('setError', { msg: 'Card delete', color: 'red' })
+				} else {
+					commit('setLoading', false)
+					commit('setError', 'You must be author this card')
+				}
+			} catch (error) {
+				commit('setError', error.message)
+				commit('setLoading', false)
+				throw error
+			}
+		},
+		async editCard({ commit, getters }, { id, update, orderImg, files }) {
+			// TODO check security
+
+			commit('clearError')
+			commit('setLoading', true)
+
+			// var uid = getters.userId
+			// console.log('deleteCard [id, ownerId, images]', id, ownerId, images)
+
+			try {
+				// if (uid === ownerId) {
+					var base = await fb.database().ref();
+					var imageSrc = []
+
+				console.log("EditCard [id, update, orderImg, files]", id, update, orderImg, files)
+
+					if(files.length) {
+						console.log('files true')
+						var imgVal = await base
+							.child("cards/" + id + "/img")
+							.once("value")
+						var img = await imgVal.val()
+
+						if(img) {
+							console.log('img true')
+							for (let i = 0; i < img.length; i++) {
+								console.log('deleteImg', i)
+								let indq = img[i].indexOf("?")
+								let inde = img[i].lastIndexOf("cards%2F", indq) + 8
+								let name = img[i].slice(inde, indq)
+								await fb
+									.storage()
+									.ref("cards/" + name)
+									.delete()
+							}
+						}
+
+						var imageSrc = []
+						for (let i = 0; i < files.length; i++) {
+							console.log('filePut', i)
+							let imageExt = files[i].name.slice(files[i].name.lastIndexOf('.') + 1)
+							let path = `cards/${id}_${i}.${imageExt}`
+							
+							await fb.storage().ref(path).put(files[i])
+								.then(snapshot => snapshot.ref.getDownloadURL())
+								.then(url => imageSrc.push(url))
+						}
+						base.child('cards/' + id).update({
+							...update,
+							img: imageSrc
+						})
+					} else if (orderImg.length) {
+						console.log('orderImg true')
+						base.child('cards/' + id).update({
+							...update,
+							img: orderImg
+						})
+					} else {
+						console.log('else true')
+						base.child('cards/' + id).update({
+							...update,
+						})
+					}
+
+					commit('setLoading', false)
+					commit('setError', { msg: 'Card update', color: 'primary' })
+				// } else {
+				// 	commit('setLoading', false)
+				// 	commit('setError', 'You must be author this card')
+				// }
+			} catch (error) {
+				commit('setError', error.message)
+				commit('setLoading', false)
+				throw error
+			}
+		},
     async fetchCards ({commit, getters}, endAt) {
       commit('clearError')
 			commit('setLoading', true)
 			
 
-			console.log('fetchCards')
-
-			var resultCards = []
-			var end = []
+			console.log('fetchCards [endAt]', endAt)
 
       try {
-				var base = await fb
-					.database()
-					.ref()
+				var resultCards = [],
+					end = [],
+					base = await fb.database().ref()
 				var _cards
 
 				if (endAt) {
@@ -150,7 +239,7 @@ export default {
 				
 				await _cards.once('value', snap => {
 					snap.forEach(e => {
-						if (e.key != endAt ) {
+						if (e.key != endAt) {
 							end.push(e.key)
 							_users.child(e.val().ownerId).once('value', user => {
 									let red = e.val().like[getters.userId] ? true : false;
@@ -180,7 +269,7 @@ export default {
 				resultCards = resultCards.concat(getters.cards)
 				
 				commit('loadCards', resultCards)
-				commit('setEnd', { end: end[0] })
+				commit('set', { v: 'end', val: end[0] })
 				commit('setLoading', false)
       } catch (error) {
         commit('setError', error.message)
@@ -192,15 +281,14 @@ export default {
 			commit('clearError')
 			commit('setLoading', true)
 
-			
-			console.log('userCards', id, user, endAt)
+			console.log('userCards [id, user, endAt]', id, user, endAt)
 
 			try {
-				var base = await fb.database().ref()
-				var _cards = base.child("cards")
-				var _userCards
-				var end = []
-				var resultCards = []
+				var base = await fb.database().ref(),
+						_cards = base.child("cards"),
+						_userCards,
+						end = [],
+						resultCards = []
 
 				if (endAt) {
 					_userCards = base
@@ -243,10 +331,10 @@ export default {
 					})
 				})
 
-				resultCards = resultCards.concat(getters.cards)
+				resultCards = resultCards.concat(getters.get('userCards'))
 
-				commit('loadCards', resultCards)
-				commit('setEnd', { end: end[0] })
+				commit('set', { v: 'userCards', val: resultCards })
+				commit('set', { v: 'userEnd', val: end[0] })
 				commit('setLoading', false)
 			} catch (error) {
 				commit('setError', error.message)
@@ -254,29 +342,95 @@ export default {
 				throw error
 			}
 		},
-		async fetchVisit({ commit, getters }) {
+		async fetchVisit({ commit, getters }, endAt) {
 			commit('clearError')
 			commit('setLoading', true)
 
-			console.log('fetchVisit')
+			console.log('fetchVisit [endAt]', endAt)
 
 			try {
-				var base = await fb.database().ref()
-				var u = getters.user
-				console.log(u)
-				var _cards = base.child("cards")
-				var _users = base.child("users/" + u.id + "/visit")
-				var resultCards = []
+				var base = await fb.database().ref(),
+						uid = getters.userId,
+						_cards = base.child("cards"),
+						_visits,
+						_users = base.child("users"),
+						resultCards = [],
+						end = []
 
-				await _users.once("value", user => {
-					user.forEach(e => {
-						if(e.key != 'length')
-						_cards.child(e.key).once("value", card => {
-							let red = card.val().like[u.id] ? true : false;
-							let visit = card.val().visit[u.id] ? true : false;
+				if (endAt) {
+					_visits = base
+						.child("users/" + uid + "/visit")
+						.orderByKey()
+						.limitToLast(4)
+						.endAt(endAt)
+				} else {
+					_visits = base
+						.child("users/" + uid + "/visit")
+						.orderByKey()
+						.limitToLast(3)
+				}
 
-							resultCards.push(
-								new Cards(
+				await _visits.once("value", visit => {
+					visit.forEach( e => {
+						if(e.key != endAt) {
+							end.push(e.key)
+							_cards.child(e.key).once("value", card => {
+								let red = card.val().like[uid] ? true : false;
+								let visit = card.val().visit[uid] ? true : false;
+
+								_users.child(card.val().ownerId).once('value', user => {
+									resultCards.push(
+										new Cards(
+											card.val().title,
+											card.val().desc,
+											card.val().ownerId,
+											card.val().time,
+											{ length: card.val().like.length, red },
+											{ length: card.val().visit.length, red: visit },
+											card.val().people,
+											card.val().comments,
+											user.val().login,
+											user.val().image,
+											card.val().img,
+											e.key
+										)
+									)
+								})
+							})
+						}
+					})
+				})
+
+				resultCards = resultCards.concat(getters.get('visitCards'))
+
+				commit('set', { v: 'visitCards', val: resultCards})
+				commit('set', { v: 'visitEnd', val: end[0]})
+				commit('setLoading', false)
+			} catch(error) {
+				commit('setError', error.message)
+				commit('setLoading', false)
+				throw error
+			}
+		},
+		async fetchSingle({ commit, getters }, id) {
+			commit('clearError')
+			commit('setLoading', true)
+
+			console.log('fetchSingle [id]', id)
+
+			try {
+				var base = await fb.database().ref(),
+					uid = getters.userId,
+					_cards = base.child("cards/" + id),
+					_users = base.child("users"),
+					resultCards
+
+				await fb.database().ref("cards/" + id).once("value", card => {
+						let red = card.val().like[uid] ? true : false;
+						let visit = card.val().visit[uid] ? true : false;
+
+						_users.child(card.val().ownerId).once('value', user => {
+							resultCards = new Cards(
 									card.val().title,
 									card.val().desc,
 									card.val().ownerId,
@@ -285,19 +439,19 @@ export default {
 									{ length: card.val().visit.length, red: visit },
 									card.val().people,
 									card.val().comments,
-									u.login,
-									u.image,
+									user.val().login,
+									user.val().image,
 									card.val().img,
-									e.key
+									id
 								)
-							)
+							commit('set', { v: 'single', val: resultCards })
 						})
 					})
-				})
-
-				commit('loadCards', resultCards)
+					
+				console.log(resultCards)
+				// commit('set', { v: 'single', val: resultCards[0] })
 				commit('setLoading', false)
-			} catch(error) {
+			} catch (error) {
 				commit('setError', error.message)
 				commit('setLoading', false)
 				throw error
@@ -309,28 +463,34 @@ export default {
 			
 			var user = getters.userId
 
-			if( user ) {
-				var base = await fb.database().ref();
-				if (red) {
-					// console.log('remove')
-					await base.child('cards/' + id + '/like').update({
-						length: length - 1,
-						[user]: null
-					})
-				}
-				else {
-					// console.log('add')
-					await base.child('cards/' + id + '/like').update({
-						length: length + 1,
-						[user]: 1
-					})
-				}
+			try {
+				if( user ) {
+					var base = await fb.database().ref();
+					if (red) {
+						// console.log('remove')
+						await base.child('cards/' + id + '/like').update({
+							length: length - 1,
+							[user]: null
+						})
+					}
+					else {
+						// console.log('add')
+						await base.child('cards/' + id + '/like').update({
+							length: length + 1,
+							[user]: 1
+						})
+					}
 
-				commit('toggleLike', { id, red })
+					// commit('toggleLike', { id, red })
+					commit('setLoading', false)
+				} else {
+					commit('setLoading', false)
+					commit('setError', 'You must be logined')
+				}
+			} catch (error) {
+				commit('setError', error.message)
 				commit('setLoading', false)
-			} else {
-				commit('setLoading', false)
-				commit('setError', 'You must be logined')
+				throw error
 			}
 		},
 		async toggleVisit({ commit, getters }, { id, length, red }) {
@@ -339,36 +499,42 @@ export default {
 			
 			var user = getters.userId
 
-			if( user ) {
-				var base = await fb.database().ref();
-				if(red) {
-					// console.log('remove')
-					base.child('cards/' + id + '/visit/').update({
-						length: length - 1,
-						[user]: null
-					})
-					base.child('users/' + user + '/visit/').update({
-						[id]: null
-					})
-					commit('setError', { msg:'Remove from members', color: 'red'})
-				}
-				else {
-					// console.log('add')
-					base.child('cards/' + id + '/visit/').update({
-						length: length + 1,
-						[user]: 1
-					})
-					base.child('users/' + user + '/visit/').update({
-						[id]: 1
-					})
-					commit('setError', { msg:'Add to members', color: 'primary'})
-				}
+			try {
+				if( user ) {
+					var base = await fb.database().ref();
+					if(red) {
+						// console.log('remove')
+						base.child('cards/' + id + '/visit/').update({
+							length: length - 1,
+							[user]: null
+						})
+						base.child('users/' + user + '/visit/').update({
+							[id]: null
+						})
+						commit('setError', { msg:'Remove from members', color: 'red'})
+					}
+					else {
+						// console.log('add')
+						base.child('cards/' + id + '/visit/').update({
+							length: length + 1,
+							[user]: 1
+						})
+						base.child('users/' + user + '/visit/').update({
+							[id]: 1
+						})
+						commit('setError', { msg:'Add to members', color: 'primary'})
+					}
 
-				commit('toggleVisit', { id, red })
+					// commit('toggleVisit', { id, red })
+					commit('setLoading', false)
+				} else {
+					commit('setLoading', false)
+					commit('setError', 'You must be logined')
+				}
+			} catch (error) {
+				commit('setError', error.message)
 				commit('setLoading', false)
-			} else {
-				commit('setLoading', false)
-				commit('setError', 'You must be logined')
+				throw error
 			}
 		},
 		async addComment ({commit, getters}, { id, text, length }) {
@@ -377,47 +543,42 @@ export default {
 
 			var user = getters.userId
 
-			if (user) {
-				var base = await fb.database();
-				var update = {};
+			try {
+				if (user) {
+					var base = await fb.database().ref();
+					var update = {};
 
-				update['cards/' + id + '/comments'] = length + 1
-				base.ref().update(update)
+					update['cards/' + id + '/comments'] = length + 1
+					base.update(update)
 
-				var key = base.ref('comments/' + id).push({
-					text,
-					user,
-					like: 0
-				}).key
-				
-				// commit('addComment', { key, text, user: getters.user, id })
+					var key = base.child('comments/' + id).push({
+						text,
+						user,
+						like: 0
+					}).key
+					
+					// commit('addComment', { key, text, user: getters.user, id })
+					commit('setLoading', false)
+					commit('setError', { msg: 'Сomment has been added', color: 'primary' })
+				} else {
+					commit('setLoading', false)
+					commit('setError', 'You must be logined')
+				}
+			} catch (error) {
+				commit('setError', error.message)
 				commit('setLoading', false)
-				commit('setError', { msg: 'Сomment has been added', color: 'primary' })
-			} else {
-				commit('setLoading', false)
-				commit('setError', 'You must be logined')
+				throw error
 			}
-		}
+		},
   },
   getters: {
     cards (state) {
       return state.cards
     },
-    myCards (state, getters) {
-      return state.cards.filter(card => card.ownerId === getters.userId)
-    },
-   	userCards (state) {
-			return userId => {
-				return state.cards.filter(card => card.ownerId === userId)
+		get (state) {
+			return type => {
+				return state[type]
 			}
-    },
-    cardById (state) {
-      return cardId => {
-        return state.cards.find(card => card.id === cardId)
-      }
-		},
-		end (state) {
-			return state.end || null
 		}
   }
 }

@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app >
     <v-navigation-drawer
       app
       temporary
@@ -74,9 +74,8 @@
 			app
 			dark
 			color="primary"
-			scroll-off-screen
 		>
-			<!-- inverted-scroll -->
+			<!-- scroll-off-screen -->
       <v-toolbar-side-icon
 				v-if="isUserLoggedIn"
         @click="drawer = !drawer"
@@ -84,8 +83,16 @@
       ></v-toolbar-side-icon>
 
       <v-toolbar-title>
-        <router-link to="/" tag="span" class="pointer">EventTime</router-link>
+        <router-link to="/" tag="span" class="pointer">Eventos</router-link>
       </v-toolbar-title>
+
+			<v-btn flat icon @click="$router.go(-1)">
+				<v-icon>keyboard_arrow_left</v-icon>
+			</v-btn>
+
+			<v-btn flat icon @click="$router.go(1)">
+				<v-icon>keyboard_arrow_right</v-icon>
+			</v-btn>
 
       <v-spacer></v-spacer>
 
@@ -108,7 +115,7 @@
 						<template v-else>
 							<span class="mr-3">{{ user.name }}</span>
 							<v-avatar>
-								<v-img position="top left" :src="user.image"></v-img>
+								<v-img :src="user.image"></v-img>
 							</v-avatar>
 						</template>
 					</v-btn>
@@ -132,9 +139,24 @@
 				</v-menu>
 			</v-toolbar-items>
     </v-toolbar>
+
+		<!-- <v-container
+      >
+        <v-layout
+          v-scroll:#scroll-target="onScroll"
+          style="height: 1000px"
+          column
+          align-center
+          justify-center
+        >
+        </v-layout>
+      </v-container> -->
 		
-    <v-content>
-			<!-- <transition :name="transitionName"> -->
+    <v-content
+				id="scroll-target"
+        style="max-height: 100vh"
+        class="scroll-y">
+			<!-- <transition name="fade" mode="out-in" @before-enter="beforeEnter" appear> -->
 				<router-view></router-view>
 			<!-- </transition> -->
     </v-content>
@@ -184,7 +206,7 @@ export default {
     return {
 			drawer: false,
 			// transitionName: '',
-			bottomNav: 'home'
+			bottomNav: 'home',
     }
   },
   computed: {
@@ -269,9 +291,11 @@ export default {
 			this.$store.dispatch('logoutUser')
 			this.$router.push('/')
 		},
-		// onScroll (e) {
-		// 	console.log(e.target.scrollTop)
-		// }
+		onScroll (e) {
+			// var contentHeight = document.querySelector('.v-content')
+			// console.log(e.target.scrollTop, e.target.offsetHeight, contentHeight.clientHeight)
+			// if(e.target.scrollTop >= e.target.offsetHeight + 200)
+		},
 	},
 	// watch: {
 	// 	'$route' (to, from) {

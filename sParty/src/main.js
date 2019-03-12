@@ -16,6 +16,7 @@ Vue.config.devtools = true
 Vue.use(Vuetify, {
 	theme: {
 		primary: '#097275'
+		// primary: '#3F51B5'
 		// primary: '#28c5b1'
 	}
 })
@@ -31,7 +32,10 @@ new Vue({
 	store,
   components: { App, Card },
 	template: '<App/>',
-	async beforeCreate() {
+	async beforeCreate () {
+		window.vu = this
+		window.fb = fb
+
 		await fb.initializeApp({
 			apiKey: "AIzaSyB1B2yJmi94g0hGCMvPnpsJ7CbXzR2wL4I",
 			authDomain: "sparty-3251e.firebaseapp.com",
@@ -49,24 +53,35 @@ new Vue({
 		})
 
 		await fb.auth().onAuthStateChanged(user => {
-			console.log('--onAuthStateChanged--')
+			console.log('--onAuthStateChanged--', user)
 			if (user) {
-				if (user.emailVerified) {
-					this.$store.dispatch('autoLoginUser', user)
-					this.$router.push('/')
-				} else {
-					var th = this
-					user.sendEmailVerification().then(function () {
-						// commit('setError', 'Email send')
-						th.$store.commit('setError', { msg: 'Verification email sent to ' + user.email, color: 'orange' })
-					}).catch(function (error) {
-						th.$store.commit('setError', error)
-					});
+				this.$store.dispatch('autoLoginUser', { id: user.uid, email: user.email })
+					.then(() => {
+						if (!user.emailVerified)
+							this.$store.commit('setError', { msg: 'Verification email sent to ' + user.email, color: 'orange' })
+
+						if(window.history.length > 2) {
+							if(this.$route.name == 'auth')
+								this.$router.go(-1)
+						} else this.$router.push('/')
+					})
+
+					// this.$router.push('/')
+				// } else {
+					// var th = this
+					// user.sendEmailVerification().then(function () {
+					// 	// commit('setError', 'Email send')
+					// 	th.$store.commit('setError', { msg: 'Verification email sent to ' + user.email, color: 'orange' })
+					// }).catch(function (error) {
+					// 	th.$store.commit('setError', error)
+					// });
 					// this.$store.commit('setError', 'Please verify your email ' + user.email)
-				}
-			} else {
-				this.$store.commit('setError', 'No login')
 			}
+			// } else {
+			// 	this.$store.commit('setError', 'No login')
+			// }
+			this.$store.commit('set', { v: 'cards', val: [] })
+			this.$store.dispatch('fetchCards')
 		})
 
 	}

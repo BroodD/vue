@@ -1,7 +1,7 @@
 <template>
 	<v-card class="elevation-10" id="comments">
 		<v-card-title>
-			<div class="headline">Comments <small>({{ length }})</small></div>
+			<div class="headline">Comments <small class="primary--text">{{ length }}</small></div>
 		</v-card-title>
 		<v-list>
 			<template v-for="c in comments">
@@ -17,12 +17,12 @@
 						<v-list-tile-sub-title v-html="c.text"></v-list-tile-sub-title>
 					</v-list-tile-content>
 
-					<v-list-tile-action>
+					<!-- <v-list-tile-action>
 						<v-btn flat>
 						<span >{{ c.like }}</span>
 							<v-icon right>favorite</v-icon>
 						</v-btn>
-					</v-list-tile-action>
+					</v-list-tile-action> -->
 				</v-list-tile>
 			</template>
 		</v-list>
@@ -67,10 +67,8 @@
 		async created () {
 			var base = await fb.database().ref()
 
-			var _comments = await fb
-				.database()
-				.ref("comments/" + this.id)
-			var _users = await fb.database().ref("users")
+			var _comments = await base.child("comments/" + this.id)
+			var _users = await base.child("users")
 			var comments = []
 
 			// get comments

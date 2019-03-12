@@ -1,7 +1,7 @@
 <template>
 	<v-card class="mb-2 elevation-10">
 		<v-card-title>
-			<div class="headline">Members <small>({{ length }})</small></div>
+			<div class="headline">Members <small class="primary--text">{{ length }}</small></div>
 		</v-card-title>
 		<v-layout row wrap>
 			<v-flex md3 v-for="v in members" :key="v.id">
@@ -57,29 +57,15 @@
 					})
 			})
 
-			_visit.limitToLast(8).on("child_removed", card => {
-				console.log( this.$store.getters.cards )
+			_visit.limitToLast(8).on("child_removed", mem => {
+				console.log('member remove', mem.key)
+				let index = this.members.findIndex(card => card.id === mem.key)
 
-				this.members = []
+				this.members.splice(index, 1)
 			})
 
 			this.members = members
 
-		
-		// _cards.child('visit').limitToLast(9).once("value", card => {
-		// 	card.forEach(e => {
-		// 		if( e.key != 'length')
-		// 			_users.child(e.key).once("value", user => {
-		// 				members.push(
-		// 					{
-		// 						id: e.key,
-		// 						name: user.val().name,
-		// 						image: user.val().image
-		// 					}
-		// 				)
-		// 			})
-		// 	})
-		// })
 		}
 	}
 </script>

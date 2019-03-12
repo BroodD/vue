@@ -22,28 +22,25 @@ import CommentsList from '@/components/Cards/CommentsList'
 import MembersList from '@/components/Cards/MembersList'
 
 export default {
-	props: ['id'],
+	props: {
+		id: String
+	},
 	components: {
 		CommentsList,
 		MembersList
 	},
-	data () {
-		return {
-			text: '',
-		}
-	},
 	computed: {
 		card () {
-			return this.$store.getters.cardById(this.id)
+			// return this.$store.getters.cardById(this.id)
+			return this.$store.getters.get('single')
 		}
 	},
-	async beforeMount () {
+	async created () {
+		await this.$store.dispatch('fetchSingle', this.id)
+
 		var base = await fb.database().ref()
-
-		console.log('cardCreate')
-
-		base.child('cards/' + this.card.id + '/comments').on('value', e => {
-			console.log('cardValue', this.card)
+		base.child('cards/' + this.id + '/comments').on('value', e => {
+			console.log('Single->commnets', this.card)
 			this.card.comments = e.val()
 		})
 		

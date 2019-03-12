@@ -1,4 +1,7 @@
-
+html
+	overflow: hidden
+body
+	overflow-x: hidden
 
 .avatar__sub 
 	position: absolute
@@ -55,10 +58,37 @@ a
 	margin-left: 0
 	padding: 0 5px
 
+.v-dialog--persistent
+	margin: 0
+	max-width: 350px
+
+// .dialog
+// 	.v-dialog__activator
+
 
 .card
 	&-wrap
 		margin: auto -20px !important
+
+// body .v-card
+// 	.card
+// 		&__author
+// 			position: absolute
+// 			width: 100%
+// 			z-index: 2
+// 			background: rgba(255, 255, 255, 0.34)
+
+.card__author
+	display: flex
+	align-items: center
+
+#app
+	.dialog
+		&--big
+			width: 100%
+			max-width: 1200px
+			max-height: none
+		
 
 
 +w(960) 

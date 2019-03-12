@@ -18,11 +18,12 @@ class Cards {
 
 export
 class User {
-	constructor(id = '', login = '', name = '', image = '', bio = '', emailVerified = false) {
+	constructor(id = '', login = '', name = '', image = '', bio = '', email = null) {
 		this.id = id
 		this.login = login
 		this.name = name
 		this.image = image
 		this.bio = bio
+		this.email = email
 	}
 }

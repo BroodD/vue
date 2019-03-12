@@ -51,6 +51,67 @@
 						<v-card class="elevation-12">
 							<v-card-text>
 								<v-form v-model="valid" ref="formReg" lazy-validation>
+									<!-- <v-layout row class="mb-3">
+										<v-flex xs12>
+											<v-btn dark class="primary" @click="triggerUpload">
+												Upload photo
+												<v-icon right dark>cloud_upload</v-icon>
+											</v-btn>
+											<input
+												ref="fileInput"
+												type="file"
+												style="display: none;"
+												accept="image/*"
+												@change="onFileChange"
+											>
+										</v-flex>
+									</v-layout> -->
+
+									<v-layout row>
+										<v-flex md4 lg6 class="mb-4">
+											<v-dialog v-model="dialog" max-width="450px">
+												<v-toolbar dark color="primary">
+													<v-toolbar-title>Change avatar</v-toolbar-title>
+												</v-toolbar>
+												<v-card>
+													<v-card-text v-show="hasImg">
+														<div style="width: auto; height: auto; display: inline-block;">
+															<vue-cropper
+																ref='cropper'
+																@cropmove="setImage"
+																:view-mode="1"
+																drag-mode="crop"
+																:background="false"
+																:aspectRatio="1/1"
+																:initialAspectRatio="1/1"
+																:src="cropImg"
+																:img-style="{ 'width': 'auto', 'height': 'auto' }"
+															></vue-cropper>
+														</div>
+													</v-card-text>
+													<v-card-actions>
+														<input
+															ref="cropInput"
+															type="file"
+															accept="image/*"
+															@change="setImage" 
+															style="display: none;"/>
+														<v-btn color="primary" @click="$refs.cropInput.click()">Upload</v-btn>
+														<v-spacer></v-spacer>
+														<v-btn color="primary" @click="cropImage" v-show="hasImg">Done</v-btn>
+													</v-card-actions>
+												</v-card>
+											</v-dialog>
+											<v-img :src="cropImg">
+												<v-layout>
+													<v-spacer></v-spacer>
+													<v-btn fab right top dark small color="primary" @click="dialog = true">
+														<v-icon>edit</v-icon>
+													</v-btn>
+												</v-layout>
+											</v-img>
+										</v-flex>
+									</v-layout>
 									<v-text-field
 										prepend-icon="person"
 										name="login"
@@ -99,26 +160,6 @@
 										:rules="confirmPasswordRules"
 										validate-on-blur
 									></v-text-field>
-									<v-layout row wrap>
-										<v-flex md4>
-											<img :src="imageSrc" v-if="imageSrc">
-										</v-flex>
-									</v-layout>
-									<v-layout row class="mb-3">
-										<v-flex xs12>
-											<v-btn dark class="primary" @click="triggerUpload">
-												Upload photo
-												<v-icon right dark>cloud_upload</v-icon>
-											</v-btn>
-											<input
-												ref="fileInput"
-												type="file"
-												style="display: none;"
-												accept="image/*"
-												@change="onFileChange"
-											>
-										</v-flex>
-									</v-layout>
 								</v-form>
 							</v-card-text>
 							<v-card-actions>
@@ -140,11 +181,16 @@
 
 						
 <script>
-  const emailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/
+	import VueCropper from 'vue-cropperjs'
+  const emailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,4})+$/
 
   export default {
+		components: { VueCropper },
     data () {
       return {
+				cropImg: require('@/assets/no_photo.jpg'),
+				dialog: false,
+
 				valid: false,
 				login: '',
 				name: '',
@@ -153,7 +199,7 @@
         password: '',
 				confirmPassword: '',
 				image: '',
-				imageSrc: '',
+				hasImg: false,
         emailRules: [
           v => !!v || 'E-mail is required',
           v => emailRegex.test(v) || 'E-mail must be valid'
@@ -178,6 +224,34 @@
       }
     },
     methods: {
+			setImage(e) {
+				const file = e.target.files[0];
+				if (!file.type.includes('image/')) {
+					alert('Please select an image file');
+					return;
+				}
+				if (typeof FileReader === 'function') {
+					const reader = new FileReader();
+					reader.onload = (event) => {
+						this.hasImg = true;
+						// rebuild cropperjs with the updated source
+						this.$refs.cropper.replace(event.target.result);
+					};
+					reader.readAsDataURL(file);
+					this.image = file
+				} else {
+					alert('Sorry, FileReader API not supported');
+				}
+			},
+			cropImage() {
+				// get image data for post processing, e.g. upload or setting image src
+				this.dialog = false
+				this.cropImg = this.$refs.cropper.getCroppedCanvas().toDataURL();
+				this.$refs.cropper.getCroppedCanvas().toBlob((blob) => {
+					this.image = blob
+				})
+			},
+
       onLogin () {
         if (this.$refs.formLog.validate()) {
           const user = {
@@ -209,19 +283,6 @@
             // .catch(() => {})
         }
 			},
-			triggerUpload () {
-        this.$refs.fileInput.click()
-      },
-      onFileChange (event) {
-        const file = event.target.files[0]
-
-        const reader = new FileReader()
-        reader.onload = e => {
-          this.imageSrc = reader.result
-        }
-        reader.readAsDataURL(file)
-        this.image = file
-      }
     },
     created () {
       if (this.$route.query['loginError']) {

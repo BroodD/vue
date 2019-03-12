@@ -13,7 +13,11 @@
     "browser-image-compression": "0.0.4",
     "firebase": "^5.5.3",
     "vue": "^2.5.2",
+    "vue-avatar-cropper": "0.0.28",
+    "vue-cropperjs": "^3.0.0",
+    "vue-image-crop-upload": "^2.5.0",
     "vue-router": "^3.0.1",
+    "vuejs-clipper": "^0.2.9",
     "vuetify": "^1.0.0",
     "vuex": "^3.0.1"
   },

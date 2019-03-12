@@ -1,5 +1,5 @@
 <template>
-  <v-container grid-list-md>
+  <v-container grid-list-md id="my" v-scroll:#scroll-target="onScroll">
 		<v-layout row wrap justify-center>
 			<v-flex sm5 lg3 justify-center pb-5 class="tac">
 				<v-avatar
@@ -66,30 +66,18 @@
 				</v-btn> -->
 			</v-flex>
 		</v-layout>
-
-		<v-layout row wrap>
-			<v-flex class="tac">
-				<v-btn
-					round
-					large
-					color="primary"
-					@click="reload"
-					:loading="loading"
-					:disabled="loading"
-				>
-					show more
-				</v-btn>
-			</v-flex>
-		</v-layout>
   </v-container>
 </template>
 
 <script>
+import { scroll } from '@/mixins/Mixin'
+
 export default {
 	props: ['id'],
+	mixins: [scroll],
 	computed: {
 		userCards () {
-			return this.$store.getters.cards
+			return this.$store.getters.get('userCards')
 		},
 		user () {
 			if( this.id != this.$store.getters.userId)
@@ -105,7 +93,7 @@ export default {
 			this.user.follow = !this.user.follow
 		},
 		reload() {
-			var endAt = this.$store.getters.end
+			var endAt = this.$store.getters.get('userEnd')
 			if(endAt)
 				this.$store.dispatch('userCards', { id: this.id, user: this.user, endAt })
 			else
@@ -116,8 +104,9 @@ export default {
 		if( this.id != this.$store.getters.userId)
 			await this.$store.dispatch('otherUser', this.id)
 
-		this.$store.commit('loadCards', [])
-		this.$store.commit('setEnd', 0)
+		// this.$store.commit('loadCards', [])
+		// this.$store.commit('setEnd', 0)
+		this.$store.commit('set', {v: 'userCards', val: []})
 		this.$store.dispatch('userCards', { id: this.id, user: this.user })
 	}
 }

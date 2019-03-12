@@ -8,6 +8,7 @@ import Registration from '@/components/Auth/Registration'
 import User from '@/components/User/User'
 import Single from '@/components/Cards/Single'
 import NewCard from '@/components/Cards/NewCard'
+import Edit from '@/components/Cards/Edit'
 import Settings from '@/components/User/Settings'
 import Visit from '@/components/User/Visit'
 import Auth from '@/components/Auth/Auth'
@@ -33,6 +34,13 @@ export default new Router({
 			props: true,
 			name: 'new',
 			component: NewCard,
+			beforeEnter: AuthGuard 
+		},
+		{
+			path: '/edit/:id',
+			props: true,
+			name: 'edit',
+			component: Edit,
 			beforeEnter: AuthGuard 
 		},
 		{
@@ -73,9 +81,14 @@ export default new Router({
 		}
 	],
 	mode: 'history',
+	saveScrollPosition: true,
 	// scrollBehavior (to, from, savedPosition) {
-	scrollBehavior (to) {
-		if (to.hash) {
+	scrollBehavior(to, from, savedPosition) {
+		// console.log('scrollBehavior() [to.path]', to, from, savedPosition)
+
+		if (savedPosition) {
+			return savedPosition
+		} else if (to.hash) {
 			return { selector: to.hash }
 		}
 
@@ -83,5 +96,12 @@ export default new Router({
 			x: 0,
 			y: 0
 		}
+		
+		// if(to.path != '/') {
+		// 	return {
+		// 		x: 0,
+		// 		y: 0
+		// 	}
+		// }
 	}
 })

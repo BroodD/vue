@@ -6,7 +6,7 @@
 					class="elevation-12"
 				>
 					<v-toolbar dark color="primary">
-            <v-toolbar-title>Create new card</v-toolbar-title>
+            <v-toolbar-title>Edit card</v-toolbar-title>
           </v-toolbar>
 
 					<v-card-text>
@@ -166,7 +166,7 @@
 									@click="createCard"
 									:disabled="!valid || loading"
 								>
-									Create
+									Update
 								</v-btn>
 							</v-flex>
 						</v-layout>
@@ -178,8 +178,9 @@
 </template>
 
 <script>
+	import * as fb from 'firebase'
 	import imageCompression from 'browser-image-compression';
-	
+
 	var swap = (a, x, y) => {
 		if (a.length === 1) return a;
 		// var t = a[x]
@@ -190,13 +191,17 @@
 	};
 
   export default {
+		props: {
+			id: String
+		},
     data () {
       return {
         files: [],
         title: '',
 				desc: '',
 				people: '',
-        images: [],
+				images: [],
+				orderImg: [],
 				time: null,
 				timeModal: false,
 				date: null,
@@ -217,6 +222,9 @@
       loading () {
         return this.$store.getters.loading
 			},
+			single () {
+				return this.$store.getters.get('single')
+			}
 		},
     methods: {
       async createCard () {
@@ -225,66 +233,41 @@
 				var d = new Date((this.date + ' ' + this.time).replace(/-/g, '/'));
 
         if (this.$refs.form.validate()) {
-          const card = {
+          var update = {
             title: this.title,
 						desc: this.desc,
 						time: -d ,
-						people: this.people,
-						images: this.images,
-            files: this.files
-          }
+						people: this.people
+					}
+					
 
-          this.$store.dispatch('createCard', card)
+          this.$store.dispatch('editCard', { id: this.id, update, orderImg: this.orderImg, files: this.files })
             .then(() => {
-              this.$router.push('/user/' + this.$store.getters.userId)
+              this.$router.push('/card/' + this.id)
             })
             .catch(() => {})
         }
       },
       triggerUpload () {
-        this.$refs.fileInput.click()
+				this.$refs.fileInput.click()
+				// this.orderImg = []
       },
       async onFileChange (event) {
 				
-				const files = event.target.files
-				console.log('NewCard onFilechange() [files]', files)
 				this.images = []
+				const files = event.target.files
+				
 
 				for (let i = 0; i < files.length; i++) {
 					let read = new FileReader()
 
 					read.onload = e => {
+						console.log(read)
 						this.images.push(read.result)
 					}
 
 					read.readAsDataURL(files[i])
 				}
-
-				// const width = 500;
-				// const height = 300;
-				// const fileName = files[0].name;
-				// const reader = new FileReader();
-				// reader.readAsDataURL(files[0]);
-				// reader.onload = event => {
-				// 		const img = new Image();
-				// 		img.src = event.target.result;
-				// 		img.onload = () => {
-				// 						const elem = document.createElement('canvas');
-				// 						elem.width = width;
-				// 						elem.height = height;
-				// 						const ctx = elem.getContext('2d');
-				// 						// img.width and img.height will give the original dimensions
-				// 						ctx.drawImage(img, 0, 0, width, height);
-				// 						ctx.canvas.toBlob((blob) => {
-				// 								const file = new File([blob], fileName, {
-				// 										type: 'image/jpeg',
-				// 										lastModified: Date.now()
-				// 								});
-				// 								console.log(file)
-				// 						}, 'image/jpeg', 1);
-				// 				},
-				// 				reader.onerror = error => console.log(error);
-				// };
 
 				this.files = files
 			},
@@ -293,36 +276,54 @@
 
 				var options = {
 					maxSizeMB: 1,
-					maxWidthOrHeight: 640,
-					useWebWorker: true
+					maxWidthOrHeight: 650,
+					// useWebWorker: true,
 				}
-				for(let i = 0; i<this.files.length; i++) {
-					try {
-						const compressedFile = await imageCompression(this.files[i], options);  // maxSizeMB, maxWidthOrHeight are optional
-						console.log('compressedFile instanceof Blob', compressedFile instanceof Blob); // true
-						console.log(`compressedFile size ${compressedFile.size / 1024 / 1024} MB`); // smaller than maxSizeMB
+				try {
+					for(let i = 0; i<this.files.length; i++) {
+							const compressedFile = await imageCompression(this.files[i], options);  // maxSizeMB, maxWidthOrHeight are optional
+							console.log('compressedFile instanceof Blob', compressedFile instanceof Blob); // true
+							console.log(`compressedFile size ${compressedFile.size / 1024 / 1024} MB`); // smaller than maxSizeMB
 				
-						//await uploadToServer(compressedFile); // write your own logic
-						fil.push(compressedFile)
-					} catch (error) {
-						console.log(error);
+							fil.push(compressedFile)
 					}
+				} catch (error) {
+					console.log(error);
 				}
+
 
 				this.files = fil
 			},
 			deleteImage (i) {
 				this.images.splice(i, 1)
+				this.orderImg.splice(i, 1)
+				// this.orderImg = []
 			},
-			// some stupid methods
 			swap (i, way) {
 				let len = this.images.length
 				if ( (i == 0 && way == 0) || (i == len - 1 && way == 2)) {
 					swap(this.images, len - 1, 0)
+					swap(this.orderImg, len - 1, 0)
 				} else {
 					swap(this.images, i - 1 + way, i)
+					swap(this.orderImg, i - 1 + way, i)
 				}
 			}
-    }
+		},
+		// edit it in feature important!!!!
+		async beforeMount () {
+			await this.$store.dispatch('fetchSingle', this.id)
+			
+			await fb.database().ref('cards/' + this.id).once('value', c => {
+				let d = new Date(-c.val().time)
+				this.title = c.val().title,
+				this.desc = c.val().desc,
+				this.people =  c.val().people,
+				this.images =  c.val().img,
+				this.orderImg = c.val().img,
+				this.time = d.toISOString().substr(11, 5)
+				this.date = d.toISOString().substr(0, 10)
+			})
+		}
   }
 </script>
