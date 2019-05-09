@@ -222,9 +222,9 @@
       async createCard () {
 				await this.compressImages()
 
-				var d = new Date((this.date + ' ' + this.time).replace(/-/g, '/'));
-
         if (this.$refs.form.validate()) {
+          var d = new Date((this.date + ' ' + this.time).replace(/-/g, '/'));
+
           const card = {
             title: this.title,
 						desc: this.desc,

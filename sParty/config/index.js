@@ -25,6 +25,9 @@ module.exports = {
 				]
 			},
 		],
+		node: {  // this is for pixi.js 
+			fs: "empty"
+		},
 		loaders: [
 			{
 				test: /\.vue$/,

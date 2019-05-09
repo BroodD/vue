@@ -52,6 +52,33 @@ new Vue({
 			// messagingSenderId: "984805020632"
 		})
 
+		
+		var self = this;
+		await void function () {
+			// get geo location
+			if (navigator.geolocation) {
+				navigator.geolocation.getCurrentPosition(position => {
+					var cords = {
+						lat: position.coords.latitude,
+						lng: position.coords.longitude
+					}
+					self.$store.commit('set', { v: 'position', val: cords })
+					//do work work here
+					/*
+					$.post("url-here", {
+							long: position.coords.longitude,
+							lat: position.coords.latitude
+					}).done(function (response) {
+							alert(responsse)
+					});
+					*/
+				}
+				);
+			} else {
+				self.$store.commit('setError', 'Geolocation is not supported by this browser')
+			}
+		} ();
+
 		await fb.auth().onAuthStateChanged(user => {
 			console.log('--onAuthStateChanged--', user)
 			if (user) {

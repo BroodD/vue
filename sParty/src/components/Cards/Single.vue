@@ -43,7 +43,6 @@ export default {
 			console.log('Single->commnets', this.card)
 			this.card.comments = e.val()
 		})
-		
 	},
 }
 </script> 

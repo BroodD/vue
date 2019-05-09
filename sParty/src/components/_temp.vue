@@ -1,16 +1,36 @@
-Find friends for meet New Year with some good red wine
-Only good & smart people (18+)
+if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+        function (position) {
+      console.log(position)
+           //do work work here
+            /*
+            $.post("url-here", {
+                long: position.coords.longitude,
+                lat: position.coords.latitude
+            }).done(function (response) {
+                alert(responsse)
+            });
+            */
+        },
+        function (error) {
+            alert(error.message);
+        }, {
+            enableHighAccuracy: true
+            , timeout: 5000
+        }
+    );
+} else {
+    alert("Geolocation is not supported by this browser.");
+}
 
-Super puper New Year
-(no) it is joke
 
-Musical evenings
-Melody
+https://maps.googleapis.com/maps/api/distancematrix/json?
+units=imperial
+&origins=48.9040686,24.6820501
+&destinations=48.9344363,24.6999686
+&key=AIzaSyAFiLGzijljjjgmnWiDdOb_UzOWO4Zgfek
 
-GO run around city lake
-every day
-
-
+https://developers.google.com/maps/documentation/javascript/distancematrix
 
 single
 

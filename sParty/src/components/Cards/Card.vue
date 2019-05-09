@@ -84,10 +84,17 @@
 		<v-card-text class="pre">{{ card.desc }}</v-card-text>
 
 		<v-card-text>
-			<div>
-				<v-icon color="black">today</v-icon>
-				<strong>{{ card.time | formatDate }}</strong>
-			</div>
+			<v-layout row wrap>
+				<div>
+					<v-icon color="black">today</v-icon>
+					<strong>{{ card.time | formatDate }}</strong>
+				</div>
+				<v-spacer></v-spacer>
+				<div v-if="position">
+					<v-icon color="black">location_on</v-icon>
+					<strong>{{ distan(position.lat, position.lng, 48.9344363, 24.6999686) }}</strong>
+				</div>
+			</v-layout>
 		</v-card-text>
 
 		<v-divider></v-divider>
@@ -126,9 +133,11 @@
 
 <script>
 	import * as fb from 'firebase'
+	import { distance } from '@/mixins/Mixin'
 
 	export default {
 		name: 'Card',
+		mixins: [distance],
 		props: {
 			card: {
 				type: Object,
@@ -143,7 +152,10 @@
 		computed: {
 			userId () {
 				return this.$store.getters.userId
-			}
+			},
+			position () {
+				return this.$store.getters.get('position')
+			},
 		},
 		methods: {
 			toggLike ({id, length, red}) {
@@ -168,11 +180,11 @@
 				var h = obj.getHours() < 9 ? '0' + obj.getHours() : obj.getHours()
 				var d = obj.getDate() < 9 ? '0' + obj.getDate() : obj.getDate()
 				var m = obj.getMonth() < 9 ? '0' + obj.getMonth() : obj.getMonth()
-				var y = obj.getFullYear()
+				var y = (obj.getFullYear() + '').slice(-2)
 
 				var f
 
-				if( obj < now) return 'Past event'
+				if( obj < now) return `Past ${h}:${mi} ${d}/${m}/${y}`
 				
 				if ( y == now.getFullYear())
 					if ( m - now.getMonth() == 0)
@@ -192,7 +204,7 @@
 					else
 						f = `${d}/${m}`
 				else
-					f = `${d}/${m}/${ (y + '').slice(-2) }`
+					f = `${d}/${m}/${y}`
 
 				return `${f} ${h}:${mi}`
 			}
